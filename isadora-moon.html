@@ -8,9 +8,11 @@
 </head>
 <body>
   <header class="site-header">
-    <a href="index.html" class="home-btn" aria-label="홈으로 가기">🏠 홈</a>
-    <h1>📖 Isadora Moon 단어장</h1>
-    <p class="subtitle">초등학교 6학년을 위한 어려운 단어·숙어 정리 — 스피커를 눌러 발음을 들어보세요</p>
+    <div class="header-inner">
+      <a href="index.html" class="home-btn" aria-label="홈으로 가기">🏠 홈</a>
+      <h1>📖 Isadora Moon 단어장</h1>
+      <p class="subtitle">초등학교 6학년을 위한 어려운 단어·숙어 정리 — 스피커를 눌러 발음을 들어보세요</p>
+    </div>
   </header>
 
   <main>
@@ -40,15 +42,22 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
       <h2 id="modal-title">새 단어 추가</h2>
       <form id="word-form">
-        <label for="form-word">단어 (영어 철자)
-          <input id="form-word" type="text" required>
-        </label>
-        <label for="form-meaning">뜻
+        <div class="form-field">
+          <label for="form-word">단어 (영어 철자)</label>
+          <div class="input-with-btn">
+            <input id="form-word" type="text" required>
+            <button type="button" id="autofill-btn" class="modal-btn secondary small">자동완성</button>
+          </div>
+          <p id="autofill-hint" class="autofill-hint" hidden></p>
+        </div>
+        <div class="form-field">
+          <label for="form-meaning">뜻</label>
           <input id="form-meaning" type="text" required>
-        </label>
-        <label for="form-example">예문 (선택 사항)
+        </div>
+        <div class="form-field">
+          <label for="form-example">예문 (선택 사항)</label>
           <textarea id="form-example" rows="2"></textarea>
-        </label>
+        </div>
         <div class="modal-actions">
           <button type="button" id="modal-cancel" class="modal-btn secondary">취소</button>
           <button type="submit" class="modal-btn primary">저장</button>
@@ -58,6 +67,13 @@
   </div>
 
   <script src="data.js"></script>
-  <script src="script.js"></script>
+  <script src="vocab-app.js"></script>
+  <script>
+    initVocabApp({
+      storageKey: "isadoraMoonVocab",
+      initialData: VOCAB_DATA,
+      showChapters: true,
+    });
+  </script>
 </body>
 </html>

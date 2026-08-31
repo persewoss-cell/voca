@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>단어장</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <p id="not-found" class="empty-message" hidden style="margin-top:60px;">
+    단어장을 찾을 수 없습니다. <a href="index.html">홈으로 돌아가기</a>
+  </p>
+
+  <div id="book-app" hidden>
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="index.html" class="home-btn" aria-label="홈으로 가기">🏠 홈</a>
+        <h1 id="page-title">📖 단어장</h1>
+        <p class="subtitle">직접 추가한 단어들을 확인해보세요 — 스피커를 눌러 발음을 들어보세요</p>
+      </div>
+    </header>
+
+    <main>
+      <div class="controls">
+        <input id="search" type="search" placeholder="단어 또는 뜻 검색..." aria-label="단어 검색">
+        <div class="mask-buttons">
+          <button id="toggle-english" class="mask-btn" type="button">영어가리기</button>
+          <button id="toggle-meaning" class="mask-btn" type="button">뜻 가리기</button>
+          <button id="add-word-btn" class="mask-btn add-btn" type="button">+ 새단어 추가</button>
+        </div>
+      </div>
+
+      <p id="voice-warning" class="voice-warning" hidden>
+        ⚠️ 이 브라우저는 음성 재생(Web Speech API)을 지원하지 않습니다. Chrome, Edge, Safari 최신 버전에서 열어주세요.
+      </p>
+
+      <div id="word-list" class="word-list"></div>
+      <p id="empty-message" class="empty-message" hidden>등록된 단어가 없습니다. "+ 새단어 추가"로 첫 단어를 넣어보세요!</p>
+    </main>
+
+    <footer class="site-footer">
+      <p>발음은 브라우저 내장 음성 합성(Web Speech API)을 사용하며 별도 비용이 들지 않습니다.</p>
+    </footer>
+  </div>
+
+  <div id="word-modal" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <h2 id="modal-title">새 단어 추가</h2>
+      <form id="word-form">
+        <div class="form-field">
+          <label for="form-word">단어 (영어 철자)</label>
+          <div class="input-with-btn">
+            <input id="form-word" type="text" required>
+            <button type="button" id="autofill-btn" class="modal-btn secondary small">자동완성</button>
+          </div>
+          <p id="autofill-hint" class="autofill-hint" hidden></p>
+        </div>
+        <div class="form-field">
+          <label for="form-meaning">뜻</label>
+          <input id="form-meaning" type="text" required>
+        </div>
+        <div class="form-field">
+          <label for="form-example">예문 (선택 사항)</label>
+          <textarea id="form-example" rows="2"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="modal-cancel" class="modal-btn secondary">취소</button>
+          <button type="submit" class="modal-btn primary">저장</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="vocab-app.js"></script>
+  <script>
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const id = params.get("id");
+      let book = null;
+      try {
+        const books = JSON.parse(localStorage.getItem("vocaBooks") || "[]");
+        book = Array.isArray(books) ? books.find((b) => b.id === id) : null;
+      } catch (e) {
+        book = null;
+      }
+
+      if (!id || !book) {
+        document.getElementById("not-found").hidden = false;
+        return;
+      }
+
+      document.title = book.name + " 단어장";
+      document.getElementById("page-title").textContent = "📖 " + book.name + " 단어장";
+      document.getElementById("book-app").hidden = false;
+
+      initVocabApp({
+        storageKey: "vocaBookWords_" + id,
+        initialData: [],
+        showChapters: false,
+      });
+    })();
+  </script>
+</body>
+</html>
