@@ -7,28 +7,39 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1>📖 Isadora Moon 단어장</h1>
-    <p class="subtitle">초등학교 6학년을 위한 어려운 단어·숙어 정리 — 스피커를 눌러 발음을 들어보세요</p>
-  </header>
+  <div id="home-screen" class="home-screen">
+    <h1 class="home-title">하윤이의 단어장</h1>
+    <button id="enter-isadora" class="book-btn" type="button">Isadora Moon</button>
+  </div>
 
-  <main>
-    <div class="controls">
-      <input id="search" type="search" placeholder="단어 또는 뜻 검색..." aria-label="단어 검색">
-      <div id="chapter-tabs" class="chapter-tabs"></div>
-    </div>
+  <div id="app-screen" class="app-screen" hidden>
+    <header class="site-header">
+      <h1>📖 Isadora Moon 단어장</h1>
+      <p class="subtitle">초등학교 6학년을 위한 어려운 단어·숙어 정리 — 스피커를 눌러 발음을 들어보세요</p>
+    </header>
 
-    <p id="voice-warning" class="voice-warning" hidden>
-      ⚠️ 이 브라우저는 음성 재생(Web Speech API)을 지원하지 않습니다. Chrome, Edge, Safari 최신 버전에서 열어주세요.
-    </p>
+    <main>
+      <div class="controls">
+        <input id="search" type="search" placeholder="단어 또는 뜻 검색..." aria-label="단어 검색">
+        <div id="chapter-tabs" class="chapter-tabs"></div>
+        <div class="mask-buttons">
+          <button id="toggle-english" class="mask-btn" type="button">영어가리기</button>
+          <button id="toggle-meaning" class="mask-btn" type="button">뜻 가리기</button>
+        </div>
+      </div>
 
-    <div id="word-list" class="word-list"></div>
-    <p id="empty-message" class="empty-message" hidden>검색 결과가 없습니다.</p>
-  </main>
+      <p id="voice-warning" class="voice-warning" hidden>
+        ⚠️ 이 브라우저는 음성 재생(Web Speech API)을 지원하지 않습니다. Chrome, Edge, Safari 최신 버전에서 열어주세요.
+      </p>
 
-  <footer class="site-footer">
-    <p>본문 예문은 책 원문에서 그대로 발췌한 문장입니다. 발음은 브라우저 내장 음성 합성(Web Speech API)을 사용하며 별도 비용이 들지 않습니다.</p>
-  </footer>
+      <div id="word-list" class="word-list"></div>
+      <p id="empty-message" class="empty-message" hidden>검색 결과가 없습니다.</p>
+    </main>
+
+    <footer class="site-footer">
+      <p>본문 예문은 책 원문에서 그대로 발췌한 문장입니다. 발음은 브라우저 내장 음성 합성(Web Speech API)을 사용하며 별도 비용이 들지 않습니다.</p>
+    </footer>
+  </div>
 
   <script src="data.js"></script>
   <script src="script.js"></script>

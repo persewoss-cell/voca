@@ -1,9 +1,20 @@
 (function () {
+  const homeScreenEl = document.getElementById("home-screen");
+  const appScreenEl = document.getElementById("app-screen");
+  const enterIsadoraBtn = document.getElementById("enter-isadora");
+
+  enterIsadoraBtn.addEventListener("click", () => {
+    homeScreenEl.hidden = true;
+    appScreenEl.hidden = false;
+  });
+
   const listEl = document.getElementById("word-list");
   const searchEl = document.getElementById("search");
   const tabsEl = document.getElementById("chapter-tabs");
   const emptyEl = document.getElementById("empty-message");
   const voiceWarningEl = document.getElementById("voice-warning");
+  const toggleEnglishBtn = document.getElementById("toggle-english");
+  const toggleMeaningBtn = document.getElementById("toggle-meaning");
 
   const supportsSpeech = "speechSynthesis" in window;
   if (!supportsSpeech) {
@@ -146,6 +157,16 @@
   searchEl.addEventListener("input", (e) => {
     query = e.target.value.trim();
     render();
+  });
+
+  toggleEnglishBtn.addEventListener("click", () => {
+    document.body.classList.toggle("hide-english");
+    toggleEnglishBtn.classList.toggle("active");
+  });
+
+  toggleMeaningBtn.addEventListener("click", () => {
+    document.body.classList.toggle("hide-meaning");
+    toggleMeaningBtn.classList.toggle("active");
   });
 
   buildTabs();
