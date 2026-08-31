@@ -20,8 +20,8 @@ function initVocabApp(config) {
   const formMeaningEl = document.getElementById("form-meaning");
   const formExampleEl = document.getElementById("form-example");
   const modalCancelBtn = document.getElementById("modal-cancel");
-  const autofillBtn = document.getElementById("autofill-btn");
-  const autofillHint = document.getElementById("autofill-hint");
+  const dictSearchBtn = document.getElementById("dict-search-btn");
+  const dictCloseBtn = document.getElementById("dict-close-btn");
 
   const supportsSpeech = "speechSynthesis" in window;
   if (!supportsSpeech && voiceWarningEl) {
@@ -117,173 +117,36 @@ function initVocabApp(config) {
     );
   }
 
-  // ---- 새 단어 추가/수정 모달 + 자동완성(뜻/품사/발음기호) ----
+  // ---- 새 단어 추가/수정 모달 + 네이버 사전 팝업 검색 ----
 
-  const POS_KR = {
-    noun: "명사",
-    verb: "동사",
-    adjective: "형용사",
-    adverb: "부사",
-    pronoun: "대명사",
-    preposition: "전치사",
-    conjunction: "접속사",
-    interjection: "감탄사",
-    exclamation: "감탄사",
-    determiner: "한정사",
-    number: "수사",
-  };
+  let dictPopup = null;
 
-  let pendingPos = "";
-  let pendingPhonetic = "";
-  let autoFillToken = 0;
-  let lastAutoFilledWord = "";
-
-  function resetPending() {
-    pendingPos = "";
-    pendingPhonetic = "";
-    lastAutoFilledWord = "";
-    if (autofillHint) {
-      autofillHint.hidden = true;
-      autofillHint.textContent = "";
-    }
-  }
-
-  function fetchWithTimeout(url, ms) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), ms);
-    return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
-  }
-
-  async function fetchDictionaryInfo(word) {
-    try {
-      const res = await fetchWithTimeout(
-        "https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(word),
-        6000
-      );
-      if (!res.ok) return { pos: "", phonetic: "" };
-      const data = await res.json();
-      const entry = Array.isArray(data) && data[0];
-      if (!entry) return { pos: "", phonetic: "" };
-      const phonetic = entry.phonetic || (entry.phonetics || []).map((p) => p.text).find(Boolean) || "";
-      const posRaw = (entry.meanings || [])[0] && entry.meanings[0].partOfSpeech;
-      return { pos: posRaw ? POS_KR[posRaw] || posRaw : "", phonetic };
-    } catch (e) {
-      return { pos: "", phonetic: "" };
-    }
-  }
-
-  function looksUseless(text, word) {
-    if (!text) return true;
-    const t = text.trim();
-    if (!t) return true;
-    if (t.toLowerCase() === word.trim().toLowerCase()) return true;
-    if (/mymemory warning|invalid|query length/i.test(t)) return true;
-    return false;
-  }
-
-  async function fetchTranslation(word) {
-    // Primary: Google Translate's public endpoint (no key needed, generally the
-    // most reliable of the free options). Falls back to MyMemory if it fails
-    // or returns something unusable (e.g. a rate-limit warning string).
-    try {
-      const res = await fetchWithTimeout(
-        "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=" +
-          encodeURIComponent(word),
-        6000
-      );
-      if (res.ok) {
-        const data = await res.json();
-        const text = Array.isArray(data) && Array.isArray(data[0])
-          ? data[0].map((segment) => segment[0]).join("")
-          : "";
-        if (!looksUseless(text, word)) return text.trim();
-      }
-    } catch (e) {
-      /* fall through to secondary provider */
-    }
-
-    try {
-      const res = await fetchWithTimeout(
-        "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(word) + "&langpair=en|ko",
-        6000
-      );
-      if (res.ok) {
-        const data = await res.json();
-        const text = data && data.responseData && data.responseData.translatedText;
-        if (!looksUseless(text, word)) return text.trim();
-      }
-    } catch (e) {
-      /* both providers failed */
-    }
-
-    return "";
-  }
-
-  async function runAutoFill(force) {
-    if (!formWordEl) return;
+  function openDictPopup() {
     const word = formWordEl.value.trim();
     if (!word) return;
-    if (!force && word === lastAutoFilledWord) return;
-
-    const token = ++autoFillToken;
-
-    if (autofillBtn) {
-      autofillBtn.disabled = true;
-      autofillBtn.dataset.originalLabel = autofillBtn.dataset.originalLabel || autofillBtn.textContent;
-      autofillBtn.textContent = "찾는 중...";
+    const url = "https://en.dict.naver.com/#/search?query=" + encodeURIComponent(word);
+    if (dictPopup && !dictPopup.closed) {
+      dictPopup.location.href = url;
+      dictPopup.focus();
+      return;
     }
-    if (autofillHint) {
-      autofillHint.textContent = "뜻을 찾는 중이에요...";
-      autofillHint.hidden = false;
-    }
-
-    const [dictInfo, translated] = await Promise.all([fetchDictionaryInfo(word), fetchTranslation(word)]);
-
-    // A newer call (word changed again, or the field was reset) started while
-    // this one was in flight — discard this stale result instead of clobbering
-    // whatever the user is looking at now.
-    if (token !== autoFillToken) return;
-
-    lastAutoFilledWord = word;
-    pendingPos = dictInfo.pos;
-    pendingPhonetic = dictInfo.phonetic;
-
-    let meaningFilled = false;
-    if (translated && formMeaningEl && !formMeaningEl.value.trim()) {
-      formMeaningEl.value = translated;
-      meaningFilled = true;
-    }
-
-    if (autofillBtn) {
-      autofillBtn.disabled = false;
-      autofillBtn.textContent = autofillBtn.dataset.originalLabel || "자동완성";
-    }
-
-    if (autofillHint) {
-      const parts = [];
-      if (meaningFilled) parts.push("뜻 자동 입력됨");
-      if (dictInfo.pos) parts.push("품사: " + dictInfo.pos);
-      if (dictInfo.phonetic) parts.push("발음기호: " + dictInfo.phonetic);
-      autofillHint.textContent = parts.length
-        ? parts.join(" · ")
-        : "자동으로 찾지 못했어요. 직접 입력해주세요.";
-      autofillHint.hidden = false;
-    }
+    dictPopup = window.open(
+      url,
+      "naverDictPopup",
+      "width=420,height=650,left=120,top=80,resizable=yes,scrollbars=yes"
+    );
   }
 
-  if (autofillBtn) {
-    autofillBtn.addEventListener("click", () => runAutoFill(true));
+  function closeDictPopup() {
+    if (dictPopup && !dictPopup.closed) dictPopup.close();
+    dictPopup = null;
   }
-  if (formWordEl) {
-    formWordEl.addEventListener("input", resetPending);
-    formWordEl.addEventListener("blur", () => {
-      if (formWordEl.value.trim()) runAutoFill(false);
-    });
-  }
+
+  if (dictSearchBtn) dictSearchBtn.addEventListener("click", openDictPopup);
+  if (dictCloseBtn) dictCloseBtn.addEventListener("click", closeDictPopup);
 
   function openModal(mode, item) {
     formEl.reset();
-    resetPending();
     formEl.dataset.mode = mode;
     formEl.dataset.id = item ? item.id : "";
     modalTitleEl.textContent = mode === "edit" ? "단어 수정" : "새 단어 추가";
@@ -291,8 +154,6 @@ function initVocabApp(config) {
       formWordEl.value = item.word;
       formMeaningEl.value = item.meaning;
       formExampleEl.value = item.example || "";
-      pendingPos = item.pos || "";
-      pendingPhonetic = item.phonetic || "";
     }
     modalEl.hidden = false;
     formWordEl.focus();
@@ -300,6 +161,7 @@ function initVocabApp(config) {
 
   function closeModal() {
     modalEl.hidden = true;
+    closeDictPopup();
   }
 
   if (addWordBtn) addWordBtn.addEventListener("click", () => openModal("add"));
@@ -324,16 +186,12 @@ function initVocabApp(config) {
         target.word = word;
         target.meaning = meaning;
         target.example = example;
-        if (pendingPos) target.pos = pendingPos;
-        if (pendingPhonetic) target.phonetic = pendingPhonetic;
       }
     } else {
       vocab.push({
         id: "custom-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
         chapter: CUSTOM_CHAPTER,
         word,
-        pos: pendingPos,
-        phonetic: pendingPhonetic,
         meaning,
         example,
       });
