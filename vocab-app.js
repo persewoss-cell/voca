@@ -1,5 +1,8 @@
-(function () {
-  const STORAGE_KEY = "isadoraMoonVocab";
+// 단어장 화면 공통 로직 (Isadora Moon, 그리고 직접 만든 단어장 페이지에서 공용으로 사용)
+function initVocabApp(config) {
+  const storageKey = config.storageKey;
+  const initialData = config.initialData || [];
+  const showChapters = !!config.showChapters;
   const CUSTOM_CHAPTER = "내가 추가한 단어";
 
   const listEl = document.getElementById("word-list");
@@ -17,9 +20,11 @@
   const formMeaningEl = document.getElementById("form-meaning");
   const formExampleEl = document.getElementById("form-example");
   const modalCancelBtn = document.getElementById("modal-cancel");
+  const autofillBtn = document.getElementById("autofill-btn");
+  const autofillHint = document.getElementById("autofill-hint");
 
   const supportsSpeech = "speechSynthesis" in window;
-  if (!supportsSpeech) {
+  if (!supportsSpeech && voiceWarningEl) {
     voiceWarningEl.hidden = false;
   }
 
@@ -51,22 +56,22 @@
 
   function loadVocab() {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(storageKey);
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length) return parsed;
+        if (Array.isArray(parsed)) return parsed;
       }
     } catch (e) {
-      /* localStorage unavailable or corrupted — fall back to base data */
+      /* localStorage unavailable or corrupted — fall back to initial data */
     }
-    return VOCAB_DATA.map((item, idx) => ({ id: "base-" + idx, ...item }));
+    return initialData.map((item, idx) => ({ id: "base-" + idx, ...item }));
   }
 
   let vocab = loadVocab();
 
   function saveVocab() {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(vocab));
+      localStorage.setItem(storageKey, JSON.stringify(vocab));
     } catch (e) {
       /* storage full or unavailable — changes stay in-memory only */
     }
@@ -75,7 +80,7 @@
   function getChapters() {
     const chapters = [];
     vocab.forEach((item) => {
-      if (!chapters.includes(item.chapter)) chapters.push(item.chapter);
+      if (item.chapter && !chapters.includes(item.chapter)) chapters.push(item.chapter);
     });
     return chapters;
   }
@@ -84,11 +89,13 @@
   let query = "";
 
   function buildTabs() {
+    if (!showChapters || !tabsEl) return;
     const allTabs = ["전체", ...getChapters()];
     if (!allTabs.includes(activeChapter)) activeChapter = "전체";
     tabsEl.innerHTML = "";
     allTabs.forEach((chapter) => {
       const btn = document.createElement("button");
+      btn.type = "button";
       btn.className = "chapter-tab" + (chapter === activeChapter ? " active" : "");
       btn.textContent = chapter;
       btn.addEventListener("click", () => {
@@ -110,8 +117,112 @@
     );
   }
 
+  // ---- 새 단어 추가/수정 모달 + 자동완성(뜻/품사/발음기호) ----
+
+  const POS_KR = {
+    noun: "명사",
+    verb: "동사",
+    adjective: "형용사",
+    adverb: "부사",
+    pronoun: "대명사",
+    preposition: "전치사",
+    conjunction: "접속사",
+    interjection: "감탄사",
+    exclamation: "감탄사",
+    determiner: "한정사",
+    number: "수사",
+  };
+
+  let pendingPos = "";
+  let pendingPhonetic = "";
+
+  function resetPending() {
+    pendingPos = "";
+    pendingPhonetic = "";
+    if (autofillHint) {
+      autofillHint.hidden = true;
+      autofillHint.textContent = "";
+    }
+  }
+
+  async function runAutoFill() {
+    if (!formWordEl) return;
+    const word = formWordEl.value.trim();
+    if (!word) return;
+
+    if (autofillBtn) {
+      autofillBtn.disabled = true;
+      autofillBtn.dataset.originalLabel = autofillBtn.dataset.originalLabel || autofillBtn.textContent;
+      autofillBtn.textContent = "찾는 중...";
+    }
+    resetPending();
+
+    try {
+      const [dictResult, transResult] = await Promise.allSettled([
+        fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(word)).then((r) =>
+          r.ok ? r.json() : null
+        ),
+        fetch(
+          "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(word) + "&langpair=en|ko"
+        ).then((r) => (r.ok ? r.json() : null)),
+      ]);
+
+      let posLabel = "";
+      let phonetic = "";
+      if (dictResult.status === "fulfilled" && Array.isArray(dictResult.value) && dictResult.value[0]) {
+        const entry = dictResult.value[0];
+        phonetic = entry.phonetic || (entry.phonetics || []).map((p) => p.text).find(Boolean) || "";
+        const posRaw = (entry.meanings || [])[0] && entry.meanings[0].partOfSpeech;
+        if (posRaw) posLabel = POS_KR[posRaw] || posRaw;
+      }
+
+      let translated = "";
+      if (transResult.status === "fulfilled" && transResult.value && transResult.value.responseData) {
+        translated = transResult.value.responseData.translatedText || "";
+      }
+
+      pendingPos = posLabel;
+      pendingPhonetic = phonetic;
+
+      if (translated && formMeaningEl && !formMeaningEl.value.trim()) {
+        formMeaningEl.value = translated;
+      }
+
+      if (autofillHint) {
+        const parts = [];
+        if (posLabel) parts.push("품사: " + posLabel);
+        if (phonetic) parts.push("발음기호: " + phonetic);
+        autofillHint.textContent = parts.length
+          ? parts.join(" · ")
+          : "자동으로 찾지 못했어요. 직접 입력해주세요.";
+        autofillHint.hidden = false;
+      }
+    } catch (e) {
+      if (autofillHint) {
+        autofillHint.textContent = "자동완성에 실패했어요. 직접 입력해주세요.";
+        autofillHint.hidden = false;
+      }
+    } finally {
+      if (autofillBtn) {
+        autofillBtn.disabled = false;
+        autofillBtn.textContent = autofillBtn.dataset.originalLabel || "자동완성";
+      }
+    }
+  }
+
+  if (autofillBtn) {
+    autofillBtn.addEventListener("click", runAutoFill);
+  }
+  if (formWordEl) {
+    formWordEl.addEventListener("input", resetPending);
+    formWordEl.addEventListener("blur", () => {
+      if (formWordEl.value.trim()) runAutoFill();
+    });
+  }
+
   function openModal(mode, item) {
     formEl.reset();
+    resetPending();
     formEl.dataset.mode = mode;
     formEl.dataset.id = item ? item.id : "";
     modalTitleEl.textContent = mode === "edit" ? "단어 수정" : "새 단어 추가";
@@ -119,6 +230,8 @@
       formWordEl.value = item.word;
       formMeaningEl.value = item.meaning;
       formExampleEl.value = item.example || "";
+      pendingPos = item.pos || "";
+      pendingPhonetic = item.phonetic || "";
     }
     modalEl.hidden = false;
     formWordEl.focus();
@@ -128,7 +241,7 @@
     modalEl.hidden = true;
   }
 
-  addWordBtn.addEventListener("click", () => openModal("add"));
+  if (addWordBtn) addWordBtn.addEventListener("click", () => openModal("add"));
   modalCancelBtn.addEventListener("click", closeModal);
   modalEl.addEventListener("click", (e) => {
     if (e.target === modalEl) closeModal();
@@ -150,13 +263,16 @@
         target.word = word;
         target.meaning = meaning;
         target.example = example;
+        if (pendingPos) target.pos = pendingPos;
+        if (pendingPhonetic) target.phonetic = pendingPhonetic;
       }
     } else {
       vocab.push({
-        id: "custom-" + Date.now(),
+        id: "custom-" + Date.now() + "-" + Math.random().toString(36).slice(2, 6),
         chapter: CUSTOM_CHAPTER,
         word,
-        pos: "",
+        pos: pendingPos,
+        phonetic: pendingPhonetic,
         meaning,
         example,
       });
@@ -168,16 +284,18 @@
   });
 
   function deleteWord(id) {
-    if (!confirm("이 단어를 삭제할까요?")) return;
+    if (!confirm("이 단어를 삭제할까요? 삭제하면 되돌릴 수 없습니다.")) return;
     vocab = vocab.filter((v) => v.id !== id);
     saveVocab();
     buildTabs();
     render();
   }
 
+  // ---- 목록 렌더링 ----
+
   function render() {
     const filtered = vocab.filter((item) => {
-      const chapterMatch = activeChapter === "전체" || item.chapter === activeChapter;
+      const chapterMatch = !showChapters || activeChapter === "전체" || item.chapter === activeChapter;
       return chapterMatch && matchesQuery(item);
     });
 
@@ -186,7 +304,7 @@
 
     let lastChapter = null;
     filtered.forEach((item) => {
-      if (item.chapter !== lastChapter && activeChapter === "전체") {
+      if (showChapters && item.chapter !== lastChapter && activeChapter === "전체") {
         const heading = document.createElement("div");
         heading.className = "chapter-heading";
         heading.textContent = item.chapter;
@@ -211,11 +329,23 @@
       wordSpeakBtn.addEventListener("click", () => speak(item.word, 0.85));
 
       const wordText = document.createElement("span");
-      wordText.className = "word-text";
+      wordText.className = "word-text maskable";
       wordText.textContent = item.word;
+      wordText.addEventListener("click", () => {
+        if (document.body.classList.contains("hide-english")) {
+          wordText.classList.toggle("revealed");
+        }
+      });
 
       left.appendChild(wordSpeakBtn);
       left.appendChild(wordText);
+
+      if (item.phonetic) {
+        const phonetic = document.createElement("span");
+        phonetic.className = "word-phonetic";
+        phonetic.textContent = item.phonetic;
+        left.appendChild(phonetic);
+      }
 
       if (item.pos) {
         const pos = document.createElement("span");
@@ -246,8 +376,13 @@
       top.appendChild(actions);
 
       const meaning = document.createElement("div");
-      meaning.className = "word-meaning";
+      meaning.className = "word-meaning maskable";
       meaning.textContent = item.meaning;
+      meaning.addEventListener("click", () => {
+        if (document.body.classList.contains("hide-meaning")) {
+          meaning.classList.toggle("revealed");
+        }
+      });
 
       card.appendChild(top);
       card.appendChild(meaning);
@@ -288,14 +423,16 @@
 
   toggleEnglishBtn.addEventListener("click", () => {
     document.body.classList.toggle("hide-english");
+    document.querySelectorAll(".word-text.revealed").forEach((el) => el.classList.remove("revealed"));
     toggleEnglishBtn.classList.toggle("active");
   });
 
   toggleMeaningBtn.addEventListener("click", () => {
     document.body.classList.toggle("hide-meaning");
+    document.querySelectorAll(".word-meaning.revealed").forEach((el) => el.classList.remove("revealed"));
     toggleMeaningBtn.classList.toggle("active");
   });
 
   buildTabs();
   render();
-})();
+}

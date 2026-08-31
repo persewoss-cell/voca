@@ -38,8 +38,34 @@ body {
 .book-list {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
+  width: 100%;
+  max-width: 320px;
+}
+
+.book-row {
+  display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
+}
+
+.book-row .book-btn {
+  flex: 1;
+}
+
+.book-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.book-actions .icon-btn {
+  background: rgba(255,255,255,0.85);
+}
+
+.book-actions .icon-btn:hover {
+  background: white;
 }
 
 .book-btn {
@@ -65,12 +91,33 @@ body {
   transform: scale(0.96);
 }
 
+.add-book-btn {
+  border: 2px dashed rgba(255,255,255,0.7);
+  background: transparent;
+  color: white;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.add-book-btn:hover {
+  background: rgba(255,255,255,0.15);
+}
+
 .site-header {
   position: relative;
   background: linear-gradient(135deg, var(--pink), #b077f5);
   color: white;
   padding: 32px 20px 24px;
   text-align: center;
+}
+
+.header-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px;
 }
 
 .site-header h1 {
@@ -85,9 +132,9 @@ body {
 }
 
 .home-btn {
-  position: absolute;
-  top: 16px;
-  right: 16px;
+  display: block;
+  width: fit-content;
+  margin: 0 0 14px;
   background: rgba(255,255,255,0.92);
   color: var(--pink-dark);
   text-decoration: none;
@@ -151,6 +198,7 @@ main {
 .mask-buttons {
   display: flex;
   justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
 }
@@ -172,13 +220,21 @@ main {
   color: white;
 }
 
-body.hide-english .word-text {
+body.hide-english .word-text.maskable {
+  cursor: pointer;
+}
+
+body.hide-english .word-text.maskable:not(.revealed) {
   color: transparent;
   background: var(--pink-dark);
   border-radius: 4px;
 }
 
-body.hide-meaning .word-meaning {
+body.hide-meaning .word-meaning.maskable {
+  cursor: pointer;
+}
+
+body.hide-meaning .word-meaning.maskable:not(.revealed) {
   color: transparent;
   background: var(--muted);
   border-radius: 4px;
@@ -262,6 +318,12 @@ body.hide-meaning .word-meaning {
   font-size: 1.15rem;
   font-weight: 700;
   color: var(--pink-dark);
+}
+
+.word-phonetic {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-style: italic;
 }
 
 .word-pos {
@@ -377,17 +439,20 @@ body.hide-meaning .word-meaning {
   font-size: 1.2rem;
 }
 
-#word-form label {
-  display: block;
+.form-field {
   margin-bottom: 14px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 6px;
   font-size: 0.9rem;
   color: var(--text);
 }
 
-#word-form input,
-#word-form textarea {
+.form-field input,
+.form-field textarea {
   width: 100%;
-  margin-top: 6px;
   padding: 10px 12px;
   border: 2px solid var(--border);
   border-radius: 10px;
@@ -397,10 +462,25 @@ body.hide-meaning .word-meaning {
   resize: vertical;
 }
 
-#word-form input:focus,
-#word-form textarea:focus {
+.form-field input:focus,
+.form-field textarea:focus {
   border-color: var(--pink);
   outline: none;
+}
+
+.input-with-btn {
+  display: flex;
+  gap: 8px;
+}
+
+.input-with-btn input {
+  flex: 1;
+}
+
+.autofill-hint {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--muted);
 }
 
 .modal-actions {
@@ -416,6 +496,12 @@ body.hide-meaning .word-meaning {
   border-radius: 999px;
   font-size: 0.9rem;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.modal-btn.small {
+  padding: 8px 14px;
+  font-size: 0.82rem;
 }
 
 .modal-btn.primary {
@@ -430,6 +516,11 @@ body.hide-meaning .word-meaning {
 .modal-btn.secondary {
   background: #f0e6ea;
   color: var(--text);
+}
+
+.modal-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .chapter-heading {
