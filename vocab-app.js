@@ -135,88 +135,149 @@ function initVocabApp(config) {
 
   let pendingPos = "";
   let pendingPhonetic = "";
+  let autoFillToken = 0;
+  let lastAutoFilledWord = "";
 
   function resetPending() {
     pendingPos = "";
     pendingPhonetic = "";
+    lastAutoFilledWord = "";
     if (autofillHint) {
       autofillHint.hidden = true;
       autofillHint.textContent = "";
     }
   }
 
-  async function runAutoFill() {
+  function fetchWithTimeout(url, ms) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+  }
+
+  async function fetchDictionaryInfo(word) {
+    try {
+      const res = await fetchWithTimeout(
+        "https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(word),
+        6000
+      );
+      if (!res.ok) return { pos: "", phonetic: "" };
+      const data = await res.json();
+      const entry = Array.isArray(data) && data[0];
+      if (!entry) return { pos: "", phonetic: "" };
+      const phonetic = entry.phonetic || (entry.phonetics || []).map((p) => p.text).find(Boolean) || "";
+      const posRaw = (entry.meanings || [])[0] && entry.meanings[0].partOfSpeech;
+      return { pos: posRaw ? POS_KR[posRaw] || posRaw : "", phonetic };
+    } catch (e) {
+      return { pos: "", phonetic: "" };
+    }
+  }
+
+  function looksUseless(text, word) {
+    if (!text) return true;
+    const t = text.trim();
+    if (!t) return true;
+    if (t.toLowerCase() === word.trim().toLowerCase()) return true;
+    if (/mymemory warning|invalid|query length/i.test(t)) return true;
+    return false;
+  }
+
+  async function fetchTranslation(word) {
+    // Primary: Google Translate's public endpoint (no key needed, generally the
+    // most reliable of the free options). Falls back to MyMemory if it fails
+    // or returns something unusable (e.g. a rate-limit warning string).
+    try {
+      const res = await fetchWithTimeout(
+        "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=" +
+          encodeURIComponent(word),
+        6000
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const text = Array.isArray(data) && Array.isArray(data[0])
+          ? data[0].map((segment) => segment[0]).join("")
+          : "";
+        if (!looksUseless(text, word)) return text.trim();
+      }
+    } catch (e) {
+      /* fall through to secondary provider */
+    }
+
+    try {
+      const res = await fetchWithTimeout(
+        "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(word) + "&langpair=en|ko",
+        6000
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const text = data && data.responseData && data.responseData.translatedText;
+        if (!looksUseless(text, word)) return text.trim();
+      }
+    } catch (e) {
+      /* both providers failed */
+    }
+
+    return "";
+  }
+
+  async function runAutoFill(force) {
     if (!formWordEl) return;
     const word = formWordEl.value.trim();
     if (!word) return;
+    if (!force && word === lastAutoFilledWord) return;
+
+    const token = ++autoFillToken;
 
     if (autofillBtn) {
       autofillBtn.disabled = true;
       autofillBtn.dataset.originalLabel = autofillBtn.dataset.originalLabel || autofillBtn.textContent;
       autofillBtn.textContent = "찾는 중...";
     }
-    resetPending();
+    if (autofillHint) {
+      autofillHint.textContent = "뜻을 찾는 중이에요...";
+      autofillHint.hidden = false;
+    }
 
-    try {
-      const [dictResult, transResult] = await Promise.allSettled([
-        fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(word)).then((r) =>
-          r.ok ? r.json() : null
-        ),
-        fetch(
-          "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(word) + "&langpair=en|ko"
-        ).then((r) => (r.ok ? r.json() : null)),
-      ]);
+    const [dictInfo, translated] = await Promise.all([fetchDictionaryInfo(word), fetchTranslation(word)]);
 
-      let posLabel = "";
-      let phonetic = "";
-      if (dictResult.status === "fulfilled" && Array.isArray(dictResult.value) && dictResult.value[0]) {
-        const entry = dictResult.value[0];
-        phonetic = entry.phonetic || (entry.phonetics || []).map((p) => p.text).find(Boolean) || "";
-        const posRaw = (entry.meanings || [])[0] && entry.meanings[0].partOfSpeech;
-        if (posRaw) posLabel = POS_KR[posRaw] || posRaw;
-      }
+    // A newer call (word changed again, or the field was reset) started while
+    // this one was in flight — discard this stale result instead of clobbering
+    // whatever the user is looking at now.
+    if (token !== autoFillToken) return;
 
-      let translated = "";
-      if (transResult.status === "fulfilled" && transResult.value && transResult.value.responseData) {
-        translated = transResult.value.responseData.translatedText || "";
-      }
+    lastAutoFilledWord = word;
+    pendingPos = dictInfo.pos;
+    pendingPhonetic = dictInfo.phonetic;
 
-      pendingPos = posLabel;
-      pendingPhonetic = phonetic;
+    let meaningFilled = false;
+    if (translated && formMeaningEl && !formMeaningEl.value.trim()) {
+      formMeaningEl.value = translated;
+      meaningFilled = true;
+    }
 
-      if (translated && formMeaningEl && !formMeaningEl.value.trim()) {
-        formMeaningEl.value = translated;
-      }
+    if (autofillBtn) {
+      autofillBtn.disabled = false;
+      autofillBtn.textContent = autofillBtn.dataset.originalLabel || "자동완성";
+    }
 
-      if (autofillHint) {
-        const parts = [];
-        if (posLabel) parts.push("품사: " + posLabel);
-        if (phonetic) parts.push("발음기호: " + phonetic);
-        autofillHint.textContent = parts.length
-          ? parts.join(" · ")
-          : "자동으로 찾지 못했어요. 직접 입력해주세요.";
-        autofillHint.hidden = false;
-      }
-    } catch (e) {
-      if (autofillHint) {
-        autofillHint.textContent = "자동완성에 실패했어요. 직접 입력해주세요.";
-        autofillHint.hidden = false;
-      }
-    } finally {
-      if (autofillBtn) {
-        autofillBtn.disabled = false;
-        autofillBtn.textContent = autofillBtn.dataset.originalLabel || "자동완성";
-      }
+    if (autofillHint) {
+      const parts = [];
+      if (meaningFilled) parts.push("뜻 자동 입력됨");
+      if (dictInfo.pos) parts.push("품사: " + dictInfo.pos);
+      if (dictInfo.phonetic) parts.push("발음기호: " + dictInfo.phonetic);
+      autofillHint.textContent = parts.length
+        ? parts.join(" · ")
+        : "자동으로 찾지 못했어요. 직접 입력해주세요.";
+      autofillHint.hidden = false;
     }
   }
 
   if (autofillBtn) {
-    autofillBtn.addEventListener("click", runAutoFill);
+    autofillBtn.addEventListener("click", () => runAutoFill(true));
   }
   if (formWordEl) {
     formWordEl.addEventListener("input", resetPending);
     formWordEl.addEventListener("blur", () => {
-      if (formWordEl.value.trim()) runAutoFill();
+      if (formWordEl.value.trim()) runAutoFill(false);
     });
   }
 
