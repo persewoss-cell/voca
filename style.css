@@ -470,11 +470,13 @@ body.hide-meaning .word-meaning.maskable:not(.revealed) {
 
 .input-with-btn {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
 }
 
 .input-with-btn input {
   flex: 1;
+  min-width: 120px;
 }
 
 .autofill-hint {
