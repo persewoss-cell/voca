@@ -35,6 +35,8 @@ function initVocabApp(config) {
   const dictSuggestionsEl = document.getElementById("dict-suggestions");
   const dictSuggestionListEl = document.getElementById("dict-suggestion-list");
   const dictApplySuggestionsBtn = document.getElementById("apply-suggestions-btn");
+  const pasteAddInputEl = document.getElementById("paste-add-input");
+  const pasteAddBtn = document.getElementById("paste-add-btn");
 
   const supportsSpeech = "speechSynthesis" in window;
   if (!supportsSpeech && voiceWarningEl) {
@@ -275,6 +277,23 @@ function initVocabApp(config) {
     dictApplySuggestionsBtn.hidden = !anySelected;
   }
 
+  function addSuggestionChip(text, selected) {
+    if (!dictSuggestionListEl) return;
+    // 처음 넣는 항목이면 "찾는 중"/"찾지 못했어요" 안내문을 지운다.
+    dictSuggestionListEl.querySelectorAll(".suggestion-status").forEach((el) => el.remove());
+
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "suggestion-chip" + (selected ? " selected" : "");
+    chip.textContent = text;
+    chip.addEventListener("click", () => {
+      chip.classList.toggle("selected");
+      updateApplySuggestionsBtn();
+    });
+    dictSuggestionListEl.appendChild(chip);
+    if (selected) updateApplySuggestionsBtn();
+  }
+
   async function loadSuggestions(word) {
     if (!dictSuggestionListEl) return;
     const token = ++suggestionRequestToken;
@@ -292,22 +311,29 @@ function initVocabApp(config) {
     if (!candidates.length) {
       const empty = document.createElement("p");
       empty.className = "suggestion-status";
-      empty.textContent = "추천 뜻을 찾지 못했어요. 왼쪽 사전 결과를 참고해 직접 입력해주세요.";
+      empty.textContent = "추천 뜻을 자동으로 찾지 못했어요. 왼쪽 사전 결과에서 뜻을 선택·복사한 뒤 붙여넣어보세요.";
       dictSuggestionListEl.appendChild(empty);
       return;
     }
 
     // 여러 개를 선택할 수 있고, "선택 반영"을 눌러야 뜻 칸에 콤마로 나열되어 반영된다.
-    candidates.forEach((text) => {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.className = "suggestion-chip";
-      chip.textContent = text;
-      chip.addEventListener("click", () => {
-        chip.classList.toggle("selected");
-        updateApplySuggestionsBtn();
-      });
-      dictSuggestionListEl.appendChild(chip);
+    candidates.forEach((text) => addSuggestionChip(text, false));
+  }
+
+  if (pasteAddBtn && pasteAddInputEl) {
+    const addFromPasteInput = () => {
+      const text = pasteAddInputEl.value.trim();
+      if (!text) return;
+      addSuggestionChip(text, true);
+      pasteAddInputEl.value = "";
+      pasteAddInputEl.focus();
+    };
+    pasteAddBtn.addEventListener("click", addFromPasteInput);
+    pasteAddInputEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        addFromPasteInput();
+      }
     });
   }
 
@@ -328,6 +354,7 @@ function initVocabApp(config) {
     if (!word) return;
     dictIframeEl.src = "https://en.dict.naver.com/#/search?query=" + encodeURIComponent(word);
     if (dictSuggestionsEl) dictSuggestionsEl.hidden = !withSuggestions;
+    if (pasteAddInputEl) pasteAddInputEl.value = "";
     if (withSuggestions) loadSuggestions(word);
     dictModalEl.hidden = false;
   }
