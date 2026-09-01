@@ -361,11 +361,17 @@ function initVocabApp(config) {
 
   function closeDictModal() {
     if (!dictModalEl) return;
+    if (document.activeElement) document.activeElement.blur(); // 가상 키보드가 열려 있으면 접는다
     dictModalEl.hidden = true;
     if (dictIframeEl) dictIframeEl.src = "about:blank";
   }
 
-  if (dictSearchBtn) dictSearchBtn.addEventListener("click", () => openDictModal(true));
+  if (dictSearchBtn) {
+    dictSearchBtn.addEventListener("click", () => {
+      formWordEl.blur(); // 태블릿 가상 키보드가 열려 있으면 접는다
+      openDictModal(true);
+    });
+  }
   if (dictModalCloseBtn) dictModalCloseBtn.addEventListener("click", closeDictModal);
   if (formWordEl) {
     // 태블릿/모바일 가상 키보드의 "다음"/"검색" 액션 버튼도 keydown Enter로 전달되므로
@@ -373,6 +379,7 @@ function initVocabApp(config) {
     formWordEl.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
+        formWordEl.blur(); // 가상 키보드를 접는다 — 그렇지 않으면 팝업 위에 계속 떠 있음
         openDictModal(true);
       }
     });
@@ -395,6 +402,7 @@ function initVocabApp(config) {
   }
 
   function closeModal() {
+    if (document.activeElement) document.activeElement.blur(); // 가상 키보드가 열려 있으면 접는다
     modalEl.hidden = true;
     closeDictModal();
   }
@@ -609,6 +617,7 @@ function initVocabApp(config) {
   // 검색 결과가 없는 상태에서 Enter(태블릿 가상 키보드의 "다음/검색" 버튼 포함)를 누르면
   // 결과없음 화면의 "검색" 버튼을 누른 것과 동일하게 사전 팝업을 연다.
   function submitSearch() {
+    searchEl.blur(); // 태블릿 가상 키보드가 열려 있으면 접는다
     performSearch();
     if (query && !emptyEl.hidden) {
       openDictModal(false, query);
