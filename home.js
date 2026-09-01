@@ -41,6 +41,7 @@
   }
 
   function closeModal() {
+    if (document.activeElement) document.activeElement.blur(); // 가상 키보드가 열려 있으면 접는다
     modalEl.hidden = true;
   }
 
