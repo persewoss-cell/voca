@@ -1,4 +1,10 @@
 // 단어장 화면 공통 로직 (Isadora Moon, 그리고 직접 만든 단어장 페이지에서 공용으로 사용)
+
+// "추천 뜻 자동입력"이 파파고(Papago) 번역을 쓰도록 하려면, papago-proxy/README.md의
+// 안내대로 Cloudflare Worker를 배포한 뒤 그 주소를 아래에 붙여넣으세요.
+// 비워두면 기존 무료 API(Google/MyMemory)만 사용합니다.
+const PAPAGO_PROXY_URL = ""; // 예: "https://papago-proxy.본인아이디.workers.dev"
+
 function initVocabApp(config) {
   const storageKey = config.storageKey;
   const initialData = config.initialData || [];
@@ -139,6 +145,24 @@ function initVocabApp(config) {
   }
 
   async function translateText(text) {
+    // 파파고 프록시가 설정되어 있으면 가장 먼저 시도한다 (번역 품질과 안정성이 더 좋음).
+    if (PAPAGO_PROXY_URL) {
+      try {
+        const sep = PAPAGO_PROXY_URL.includes("?") ? "&" : "?";
+        const res = await fetchWithTimeout(
+          PAPAGO_PROXY_URL + sep + "text=" + encodeURIComponent(text) + "&source=en&target=ko",
+          6000
+        );
+        if (res.ok) {
+          const data = await res.json();
+          const out = data && data.translatedText;
+          if (out && !looksUseless(out, text)) return out.trim();
+        }
+      } catch (e) {
+        /* 파파고 프록시 실패 — 아래 무료 API로 대체 */
+      }
+    }
+
     // 짧은 단어 하나만 번역기에 넣으면 "home"→"홈"처럼 흔한 외래어/오역이 나오기 쉬워서,
     // 가능하면 사전 정의 문장 전체를 번역해 의미를 더 정확히 구분한다.
     try {
