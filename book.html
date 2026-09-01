@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>단어장</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
   <p id="not-found" class="empty-message" hidden style="margin-top:60px;">
@@ -22,7 +22,10 @@
 
     <main>
       <div class="controls">
-        <input id="search" type="search" placeholder="단어 또는 뜻 검색..." aria-label="단어 검색">
+        <div class="search-row">
+          <input id="search" type="search" placeholder="단어 또는 뜻 검색..." aria-label="단어 검색">
+          <button type="button" id="search-btn" class="search-icon-btn" aria-label="검색">🔍</button>
+        </div>
         <div class="mask-buttons">
           <button id="toggle-english" class="mask-btn" type="button">영어가리기</button>
           <button id="toggle-meaning" class="mask-btn" type="button">뜻 가리기</button>
@@ -52,9 +55,8 @@
           <div class="input-with-btn">
             <input id="form-word" type="text" required>
             <button type="button" id="dict-search-btn" class="modal-btn secondary small">검색</button>
-            <button type="button" id="dict-close-btn" class="modal-btn secondary small">닫기</button>
           </div>
-          <p class="autofill-hint">네이버 영어사전에서 단어를 찾아볼 수 있어요. 뜻은 직접 입력해주세요.</p>
+          <p class="autofill-hint">단어를 입력하고 "검색"(또는 Enter)을 누르면 네이버 영어사전과 추천 뜻을 볼 수 있어요.</p>
         </div>
         <div class="form-field">
           <label for="form-meaning">뜻</label>
@@ -72,7 +74,20 @@
     </div>
   </div>
 
-  <script src="vocab-app.js?v=5"></script>
+  <div id="dict-modal" class="modal-overlay dict-modal-overlay" hidden>
+    <div class="dict-modal">
+      <button type="button" id="dict-modal-close" class="dict-modal-close" aria-label="사전 검색 닫기">✕</button>
+      <div class="dict-modal-body">
+        <iframe id="dict-iframe" class="dict-iframe" title="네이버 영어사전 검색 결과"></iframe>
+        <div id="dict-suggestions" class="dict-suggestions" hidden>
+          <h3>추천 뜻<br>자동입력</h3>
+          <div id="dict-suggestion-list" class="dict-suggestion-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="vocab-app.js?v=6"></script>
   <script>
     (function () {
       const params = new URLSearchParams(location.search);
