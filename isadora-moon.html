@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Isadora Moon 단어장</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
   <header class="site-header">
@@ -18,7 +18,7 @@
   <main>
     <div class="controls">
       <div class="search-row">
-        <input id="search" type="search" placeholder="단어 또는 뜻 검색..." aria-label="단어 검색">
+        <input id="search" type="search" enterkeyhint="search" placeholder="단어 또는 뜻 검색..." aria-label="단어 검색">
         <button type="button" id="search-btn" class="search-icon-btn" aria-label="검색">🔍</button>
       </div>
       <div id="chapter-tabs" class="chapter-tabs"></div>
@@ -48,7 +48,7 @@
         <div class="form-field">
           <label for="form-word">단어 (영어 철자)</label>
           <div class="input-with-btn">
-            <input id="form-word" type="text" required>
+            <input id="form-word" type="text" enterkeyhint="search" required>
             <button type="button" id="dict-search-btn" class="modal-btn secondary small">검색</button>
           </div>
           <p class="autofill-hint">단어를 입력하고 "검색"(또는 Enter)을 누르면 네이버 영어사전과 추천 뜻을 볼 수 있어요.</p>
@@ -77,13 +77,14 @@
         <div id="dict-suggestions" class="dict-suggestions" hidden>
           <h3>추천 뜻<br>자동입력</h3>
           <div id="dict-suggestion-list" class="dict-suggestion-list"></div>
+          <button type="button" id="apply-suggestions-btn" class="modal-btn primary apply-suggestions-btn" hidden>선택 반영</button>
         </div>
       </div>
     </div>
   </div>
 
-  <script src="data.js?v=6"></script>
-  <script src="vocab-app.js?v=6"></script>
+  <script src="data.js?v=7"></script>
+  <script src="vocab-app.js?v=7"></script>
   <script>
     initVocabApp({
       storageKey: "isadoraMoonVocab",

@@ -46,12 +46,7 @@
 
   addBtn.addEventListener("click", () => openModal("add"));
   cancelBtn.addEventListener("click", closeModal);
-  modalEl.addEventListener("click", (e) => {
-    if (e.target === modalEl) closeModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !modalEl.hidden) closeModal();
-  });
+  // 배경(창 밖) 클릭이나 Esc로는 닫히지 않도록 한다 — 취소 버튼으로만 닫는다.
 
   formEl.addEventListener("submit", (e) => {
     e.preventDefault();

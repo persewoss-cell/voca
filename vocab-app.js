@@ -28,6 +28,7 @@ function initVocabApp(config) {
   const dictIframeEl = document.getElementById("dict-iframe");
   const dictSuggestionsEl = document.getElementById("dict-suggestions");
   const dictSuggestionListEl = document.getElementById("dict-suggestion-list");
+  const dictApplySuggestionsBtn = document.getElementById("apply-suggestions-btn");
 
   const supportsSpeech = "speechSynthesis" in window;
   if (!supportsSpeech && voiceWarningEl) {
@@ -192,10 +193,17 @@ function initVocabApp(config) {
 
   let suggestionRequestToken = 0;
 
+  function updateApplySuggestionsBtn() {
+    if (!dictApplySuggestionsBtn) return;
+    const anySelected = !!dictSuggestionListEl.querySelector(".suggestion-chip.selected");
+    dictApplySuggestionsBtn.hidden = !anySelected;
+  }
+
   async function loadSuggestions(word) {
     if (!dictSuggestionListEl) return;
     const token = ++suggestionRequestToken;
     dictSuggestionListEl.innerHTML = "";
+    if (dictApplySuggestionsBtn) dictApplySuggestionsBtn.hidden = true;
     const loading = document.createElement("p");
     loading.className = "suggestion-status";
     loading.textContent = "찾는 중...";
@@ -213,19 +221,27 @@ function initVocabApp(config) {
       return;
     }
 
+    // 여러 개를 선택할 수 있고, "선택 반영"을 눌러야 뜻 칸에 콤마로 나열되어 반영된다.
     candidates.forEach((text) => {
       const chip = document.createElement("button");
       chip.type = "button";
       chip.className = "suggestion-chip";
       chip.textContent = text;
       chip.addEventListener("click", () => {
-        formMeaningEl.value = text;
-        dictSuggestionListEl.querySelectorAll(".suggestion-chip.selected").forEach((el) => {
-          el.classList.remove("selected");
-        });
-        chip.classList.add("selected");
+        chip.classList.toggle("selected");
+        updateApplySuggestionsBtn();
       });
       dictSuggestionListEl.appendChild(chip);
+    });
+  }
+
+  if (dictApplySuggestionsBtn) {
+    dictApplySuggestionsBtn.addEventListener("click", () => {
+      const selected = Array.from(dictSuggestionListEl.querySelectorAll(".suggestion-chip.selected")).map(
+        (el) => el.textContent
+      );
+      if (!selected.length) return;
+      formMeaningEl.value = selected.join(", ");
     });
   }
 
@@ -247,12 +263,9 @@ function initVocabApp(config) {
 
   if (dictSearchBtn) dictSearchBtn.addEventListener("click", () => openDictModal(true));
   if (dictModalCloseBtn) dictModalCloseBtn.addEventListener("click", closeDictModal);
-  if (dictModalEl) {
-    dictModalEl.addEventListener("click", (e) => {
-      if (e.target === dictModalEl) closeDictModal();
-    });
-  }
   if (formWordEl) {
+    // 태블릿/모바일 가상 키보드의 "다음"/"검색" 액션 버튼도 keydown Enter로 전달되므로
+    // 데스크톱의 Enter 키와 동일하게 처리된다.
     formWordEl.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -284,17 +297,7 @@ function initVocabApp(config) {
 
   if (addWordBtn) addWordBtn.addEventListener("click", () => openModal("add"));
   modalCancelBtn.addEventListener("click", closeModal);
-  modalEl.addEventListener("click", (e) => {
-    if (e.target === modalEl) closeModal();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    if (dictModalEl && !dictModalEl.hidden) {
-      closeDictModal();
-      return;
-    }
-    if (!modalEl.hidden) closeModal();
-  });
+  // 배경(창 밖) 클릭이나 Esc로는 닫히지 않도록 한다 — 취소/X 버튼으로만 닫는다.
 
   formEl.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -499,14 +502,26 @@ function initVocabApp(config) {
     render();
   }
 
+  // 검색 결과가 없는 상태에서 Enter(태블릿 가상 키보드의 "다음/검색" 버튼 포함)를 누르면
+  // 결과없음 화면의 "검색" 버튼을 누른 것과 동일하게 사전 팝업을 연다.
+  function submitSearch() {
+    performSearch();
+    if (query && !emptyEl.hidden) {
+      openDictModal(false, query);
+    }
+  }
+
   searchEl.addEventListener("input", performSearch);
   searchEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      performSearch();
+      submitSearch();
     }
   });
-  if (searchBtn) searchBtn.addEventListener("click", performSearch);
+  // type="search" 입력창은 가상 키보드의 액션 버튼을 누르면 keydown 대신(또는 더불어)
+  // 네이티브 "search" 이벤트로 전달되는 브라우저가 있어 함께 처리한다.
+  searchEl.addEventListener("search", submitSearch);
+  if (searchBtn) searchBtn.addEventListener("click", submitSearch);
 
   toggleEnglishBtn.addEventListener("click", () => {
     document.body.classList.toggle("hide-english");

@@ -634,10 +634,10 @@ body.hide-meaning .word-meaning.maskable:not(.revealed) {
   border-left: 2px solid var(--border);
   background: #faf5f8;
   padding: 16px 10px;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-height: 0;
 }
 
 .dict-suggestions[hidden] {
@@ -650,12 +650,21 @@ body.hide-meaning .word-meaning.maskable:not(.revealed) {
   color: var(--pink-dark);
   text-align: center;
   line-height: 1.3;
+  flex-shrink: 0;
 }
 
 .dict-suggestion-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.apply-suggestions-btn {
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .suggestion-status {
