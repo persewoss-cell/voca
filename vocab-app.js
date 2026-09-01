@@ -374,15 +374,31 @@ function initVocabApp(config) {
   }
   if (dictModalCloseBtn) dictModalCloseBtn.addEventListener("click", closeDictModal);
   if (formWordEl) {
-    // 태블릿/모바일 가상 키보드의 "다음"/"검색" 액션 버튼도 keydown Enter로 전달되므로
-    // 데스크톱의 Enter 키와 동일하게 처리된다.
+    // 태블릿/모바일 가상 키보드의 "다음/이동/검색" 같은 액션 버튼은 기기·키보드에 따라
+    // keydown Enter, keyup Enter, 또는 (type=search에서만) 네이티브 "search" 이벤트 중
+    // 하나로만 전달되는 경우가 있어 셋 다 감지한다. 여러 이벤트가 겹쳐 와도 안전하도록
+    // 직전 처리 시각을 기준으로 중복 실행만 막는다.
+    let lastFormWordSubmit = 0;
+    const submitFormWordSearch = () => {
+      const now = Date.now();
+      if (now - lastFormWordSubmit < 300) return; // 같은 액션이 여러 이벤트로 겹쳐 오는 것 방지
+      lastFormWordSubmit = now;
+      formWordEl.blur(); // 가상 키보드를 접는다 — 그렇지 않으면 팝업 위에 계속 떠 있음
+      openDictModal(true);
+    };
     formWordEl.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        formWordEl.blur(); // 가상 키보드를 접는다 — 그렇지 않으면 팝업 위에 계속 떠 있음
-        openDictModal(true);
+        submitFormWordSearch();
       }
     });
+    formWordEl.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        submitFormWordSearch();
+      }
+    });
+    formWordEl.addEventListener("search", submitFormWordSearch);
   }
 
   function openModal(mode, item, prefillWord) {
@@ -616,7 +632,11 @@ function initVocabApp(config) {
 
   // 검색 결과가 없는 상태에서 Enter(태블릿 가상 키보드의 "다음/검색" 버튼 포함)를 누르면
   // 결과없음 화면의 "검색" 버튼을 누른 것과 동일하게 사전 팝업을 연다.
+  let lastSearchSubmit = 0;
   function submitSearch() {
+    const now = Date.now();
+    if (now - lastSearchSubmit < 300) return; // 같은 액션이 여러 이벤트로 겹쳐 오는 것 방지
+    lastSearchSubmit = now;
     searchEl.blur(); // 태블릿 가상 키보드가 열려 있으면 접는다
     performSearch();
     if (query && !emptyEl.hidden) {
@@ -625,14 +645,21 @@ function initVocabApp(config) {
   }
 
   searchEl.addEventListener("input", performSearch);
+  // 태블릿/모바일 가상 키보드의 "다음/이동/검색" 액션 버튼은 기기·키보드에 따라
+  // keydown Enter, keyup Enter, 또는 네이티브 "search" 이벤트 중 하나로만 전달되는
+  // 경우가 있어 셋 다 감지한다.
   searchEl.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
       submitSearch();
     }
   });
-  // type="search" 입력창은 가상 키보드의 액션 버튼을 누르면 keydown 대신(또는 더불어)
-  // 네이티브 "search" 이벤트로 전달되는 브라우저가 있어 함께 처리한다.
+  searchEl.addEventListener("keyup", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitSearch();
+    }
+  });
   searchEl.addEventListener("search", submitSearch);
   if (searchBtn) searchBtn.addEventListener("click", submitSearch);
 

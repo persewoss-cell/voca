@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>단어장</title>
-<link rel="stylesheet" href="style.css?v=11">
+<link rel="stylesheet" href="style.css?v=12">
 </head>
 <body>
   <p id="not-found" class="empty-message" hidden style="margin-top:60px;">
@@ -53,7 +53,7 @@
         <div class="form-field">
           <label for="form-word">단어 (영어 철자)</label>
           <div class="input-with-btn">
-            <input id="form-word" type="text" enterkeyhint="search" required>
+            <input id="form-word" type="search" enterkeyhint="search" required>
             <button type="button" id="dict-search-btn" class="modal-btn secondary small">검색</button>
           </div>
           <p class="autofill-hint">단어를 입력하고 "검색"(또는 Enter)을 누르면 네이버 영어사전과 추천 뜻을 볼 수 있어요.</p>
@@ -93,7 +93,7 @@
     </div>
   </div>
 
-  <script src="vocab-app.js?v=11"></script>
+  <script src="vocab-app.js?v=12"></script>
   <script>
     (function () {
       const params = new URLSearchParams(location.search);
