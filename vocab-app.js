@@ -138,6 +138,65 @@ function initVocabApp(config) {
     return false;
   }
 
+  async function translateText(text) {
+    // 짧은 단어 하나만 번역기에 넣으면 "home"→"홈"처럼 흔한 외래어/오역이 나오기 쉬워서,
+    // 가능하면 사전 정의 문장 전체를 번역해 의미를 더 정확히 구분한다.
+    try {
+      const res = await fetchWithTimeout(
+        "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=" +
+          encodeURIComponent(text),
+        6000
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const out = Array.isArray(data) && Array.isArray(data[0])
+          ? data[0].map((segment) => segment[0]).join("")
+          : "";
+        if (out && out.trim()) return out.trim();
+      }
+    } catch (e) {
+      /* fall through to the other provider */
+    }
+
+    try {
+      const res = await fetchWithTimeout(
+        "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text) + "&langpair=en|ko",
+        6000
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const out = data && data.responseData && data.responseData.translatedText;
+        if (out && !looksUseless(out, text)) return out.trim();
+      }
+    } catch (e) {
+      /* both providers failed */
+    }
+
+    return "";
+  }
+
+  async function fetchDictionaryDefinitions(word) {
+    try {
+      const res = await fetchWithTimeout(
+        "https://api.dictionaryapi.dev/api/v2/entries/en/" + encodeURIComponent(word),
+        6000
+      );
+      if (!res.ok) return [];
+      const data = await res.json();
+      const entry = Array.isArray(data) && data[0];
+      if (!entry) return [];
+      const defs = [];
+      (entry.meanings || []).forEach((m) => {
+        (m.definitions || []).slice(0, 2).forEach((d) => {
+          if (d && d.definition) defs.push(d.definition);
+        });
+      });
+      return defs.slice(0, 4);
+    } catch (e) {
+      return [];
+    }
+  }
+
   // "추천 뜻 자동입력" 패널용 후보 뜻 목록 — 네이버 사전 팝업(iframe)은 다른 도메인이라
   // 그 안의 검색 결과를 읽어올 수 없으므로(교차 출처 제한), 별도의 사전/번역 API에서
   // 후보를 가져와 사용자가 직접 고르게 한다.
@@ -154,21 +213,14 @@ function initVocabApp(config) {
       candidates.push(t);
     }
 
-    try {
-      const res = await fetchWithTimeout(
-        "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=" +
-          encodeURIComponent(word),
-        6000
-      );
-      if (res.ok) {
-        const data = await res.json();
-        const text = Array.isArray(data) && Array.isArray(data[0])
-          ? data[0].map((segment) => segment[0]).join("")
-          : "";
-        add(text);
-      }
-    } catch (e) {
-      /* ignore — try the other provider */
+    // 영어 사전(definition) 문장 단위로 번역 — 뜻을 뜻(품사/의미)별로 구분해 더 정확한 후보를 만든다.
+    const definitions = await fetchDictionaryDefinitions(word);
+    const defTranslations = await Promise.all(definitions.map((d) => translateText(d)));
+    defTranslations.forEach((t) => add(t));
+
+    // 단어 하나만 넣은 번역도 보조 후보로 추가 (사전에 정의가 없는 단어를 위한 대비)
+    if (candidates.length < 4) {
+      add(await translateText(word));
     }
 
     try {
@@ -242,6 +294,7 @@ function initVocabApp(config) {
       );
       if (!selected.length) return;
       formMeaningEl.value = selected.join(", ");
+      closeDictModal();
     });
   }
 
