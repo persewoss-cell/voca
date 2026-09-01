@@ -7,8 +7,10 @@ function initVocabApp(config) {
 
   const listEl = document.getElementById("word-list");
   const searchEl = document.getElementById("search");
+  const searchBtn = document.getElementById("search-btn");
   const tabsEl = document.getElementById("chapter-tabs");
   const emptyEl = document.getElementById("empty-message");
+  const defaultEmptyText = emptyEl.textContent;
   const voiceWarningEl = document.getElementById("voice-warning");
   const toggleEnglishBtn = document.getElementById("toggle-english");
   const toggleMeaningBtn = document.getElementById("toggle-meaning");
@@ -21,7 +23,11 @@ function initVocabApp(config) {
   const formExampleEl = document.getElementById("form-example");
   const modalCancelBtn = document.getElementById("modal-cancel");
   const dictSearchBtn = document.getElementById("dict-search-btn");
-  const dictCloseBtn = document.getElementById("dict-close-btn");
+  const dictModalEl = document.getElementById("dict-modal");
+  const dictModalCloseBtn = document.getElementById("dict-modal-close");
+  const dictIframeEl = document.getElementById("dict-iframe");
+  const dictSuggestionsEl = document.getElementById("dict-suggestions");
+  const dictSuggestionListEl = document.getElementById("dict-suggestion-list");
 
   const supportsSpeech = "speechSynthesis" in window;
   if (!supportsSpeech && voiceWarningEl) {
@@ -110,42 +116,152 @@ function initVocabApp(config) {
   function matchesQuery(item) {
     if (!query) return true;
     const q = query.toLowerCase();
-    return (
-      item.word.toLowerCase().includes(q) ||
-      item.meaning.toLowerCase().includes(q) ||
-      (item.example || "").toLowerCase().includes(q)
-    );
+    // 예문은 검색 대상에서 제외 — 단어/뜻에만 일치해야 검색됨
+    return item.word.toLowerCase().includes(q) || item.meaning.toLowerCase().includes(q);
   }
 
-  // ---- 새 단어 추가/수정 모달 + 네이버 사전 팝업 검색 ----
+  // ---- 새 단어 추가/수정 모달 + 네이버 사전 검색 팝업(화면 내) ----
 
-  let dictPopup = null;
+  function fetchWithTimeout(url, ms) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), ms);
+    return fetch(url, { signal: controller.signal }).finally(() => clearTimeout(timer));
+  }
 
-  function openDictPopup() {
-    const word = formWordEl.value.trim();
-    if (!word) return;
-    const url = "https://en.dict.naver.com/#/search?query=" + encodeURIComponent(word);
-    if (dictPopup && !dictPopup.closed) {
-      dictPopup.location.href = url;
-      dictPopup.focus();
+  function looksUseless(text, word) {
+    if (!text) return true;
+    const t = text.trim();
+    if (!t) return true;
+    if (t.toLowerCase() === word.trim().toLowerCase()) return true;
+    if (/mymemory warning|invalid|query length/i.test(t)) return true;
+    return false;
+  }
+
+  // "추천 뜻 자동입력" 패널용 후보 뜻 목록 — 네이버 사전 팝업(iframe)은 다른 도메인이라
+  // 그 안의 검색 결과를 읽어올 수 없으므로(교차 출처 제한), 별도의 사전/번역 API에서
+  // 후보를 가져와 사용자가 직접 고르게 한다.
+  async function fetchMeaningCandidates(word) {
+    const candidates = [];
+    const seen = new Set();
+    function add(text) {
+      if (!text) return;
+      const t = String(text).trim();
+      if (!t || looksUseless(t, word)) return;
+      const key = t.toLowerCase();
+      if (seen.has(key)) return;
+      seen.add(key);
+      candidates.push(t);
+    }
+
+    try {
+      const res = await fetchWithTimeout(
+        "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=ko&dt=t&q=" +
+          encodeURIComponent(word),
+        6000
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const text = Array.isArray(data) && Array.isArray(data[0])
+          ? data[0].map((segment) => segment[0]).join("")
+          : "";
+        add(text);
+      }
+    } catch (e) {
+      /* ignore — try the other provider */
+    }
+
+    try {
+      const res = await fetchWithTimeout(
+        "https://api.mymemory.translated.net/get?q=" + encodeURIComponent(word) + "&langpair=en|ko",
+        6000
+      );
+      if (res.ok) {
+        const data = await res.json();
+        add(data && data.responseData && data.responseData.translatedText);
+        (Array.isArray(data && data.matches) ? data.matches : [])
+          .slice()
+          .sort((a, b) => (b.match || 0) - (a.match || 0))
+          .forEach((m) => add(m && m.translation));
+      }
+    } catch (e) {
+      /* ignore — show whatever we already have */
+    }
+
+    return candidates.slice(0, 6);
+  }
+
+  let suggestionRequestToken = 0;
+
+  async function loadSuggestions(word) {
+    if (!dictSuggestionListEl) return;
+    const token = ++suggestionRequestToken;
+    dictSuggestionListEl.innerHTML = "";
+    const loading = document.createElement("p");
+    loading.className = "suggestion-status";
+    loading.textContent = "찾는 중...";
+    dictSuggestionListEl.appendChild(loading);
+
+    const candidates = await fetchMeaningCandidates(word);
+    if (token !== suggestionRequestToken) return; // 검색어가 그새 바뀜 — 오래된 결과 버림
+
+    dictSuggestionListEl.innerHTML = "";
+    if (!candidates.length) {
+      const empty = document.createElement("p");
+      empty.className = "suggestion-status";
+      empty.textContent = "추천 뜻을 찾지 못했어요. 왼쪽 사전 결과를 참고해 직접 입력해주세요.";
+      dictSuggestionListEl.appendChild(empty);
       return;
     }
-    dictPopup = window.open(
-      url,
-      "naverDictPopup",
-      "width=420,height=650,left=120,top=80,resizable=yes,scrollbars=yes"
-    );
+
+    candidates.forEach((text) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "suggestion-chip";
+      chip.textContent = text;
+      chip.addEventListener("click", () => {
+        formMeaningEl.value = text;
+        dictSuggestionListEl.querySelectorAll(".suggestion-chip.selected").forEach((el) => {
+          el.classList.remove("selected");
+        });
+        chip.classList.add("selected");
+      });
+      dictSuggestionListEl.appendChild(chip);
+    });
   }
 
-  function closeDictPopup() {
-    if (dictPopup && !dictPopup.closed) dictPopup.close();
-    dictPopup = null;
+  function openDictModal(withSuggestions, wordOverride) {
+    if (!dictModalEl || !dictIframeEl) return;
+    const word = (wordOverride !== undefined ? wordOverride : formWordEl.value).trim();
+    if (!word) return;
+    dictIframeEl.src = "https://en.dict.naver.com/#/search?query=" + encodeURIComponent(word);
+    if (dictSuggestionsEl) dictSuggestionsEl.hidden = !withSuggestions;
+    if (withSuggestions) loadSuggestions(word);
+    dictModalEl.hidden = false;
   }
 
-  if (dictSearchBtn) dictSearchBtn.addEventListener("click", openDictPopup);
-  if (dictCloseBtn) dictCloseBtn.addEventListener("click", closeDictPopup);
+  function closeDictModal() {
+    if (!dictModalEl) return;
+    dictModalEl.hidden = true;
+    if (dictIframeEl) dictIframeEl.src = "about:blank";
+  }
 
-  function openModal(mode, item) {
+  if (dictSearchBtn) dictSearchBtn.addEventListener("click", () => openDictModal(true));
+  if (dictModalCloseBtn) dictModalCloseBtn.addEventListener("click", closeDictModal);
+  if (dictModalEl) {
+    dictModalEl.addEventListener("click", (e) => {
+      if (e.target === dictModalEl) closeDictModal();
+    });
+  }
+  if (formWordEl) {
+    formWordEl.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        openDictModal(true);
+      }
+    });
+  }
+
+  function openModal(mode, item, prefillWord) {
     formEl.reset();
     formEl.dataset.mode = mode;
     formEl.dataset.id = item ? item.id : "";
@@ -154,6 +270,8 @@ function initVocabApp(config) {
       formWordEl.value = item.word;
       formMeaningEl.value = item.meaning;
       formExampleEl.value = item.example || "";
+    } else if (prefillWord) {
+      formWordEl.value = prefillWord;
     }
     modalEl.hidden = false;
     formWordEl.focus();
@@ -161,7 +279,7 @@ function initVocabApp(config) {
 
   function closeModal() {
     modalEl.hidden = true;
-    closeDictPopup();
+    closeDictModal();
   }
 
   if (addWordBtn) addWordBtn.addEventListener("click", () => openModal("add"));
@@ -170,7 +288,12 @@ function initVocabApp(config) {
     if (e.target === modalEl) closeModal();
   });
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !modalEl.hidden) closeModal();
+    if (e.key !== "Escape") return;
+    if (dictModalEl && !dictModalEl.hidden) {
+      closeDictModal();
+      return;
+    }
+    if (!modalEl.hidden) closeModal();
   });
 
   formEl.addEventListener("submit", (e) => {
@@ -212,6 +335,41 @@ function initVocabApp(config) {
 
   // ---- 목록 렌더링 ----
 
+  function renderEmptyState() {
+    emptyEl.innerHTML = "";
+    if (!query) {
+      const msg = document.createElement("p");
+      msg.className = "empty-message-text";
+      msg.textContent = defaultEmptyText;
+      emptyEl.appendChild(msg);
+      return;
+    }
+
+    const msg = document.createElement("p");
+    msg.className = "empty-message-text";
+    msg.textContent = `"${query}" 검색 결과가 없습니다.`;
+
+    const actions = document.createElement("div");
+    actions.className = "empty-actions";
+
+    const searchAction = document.createElement("button");
+    searchAction.type = "button";
+    searchAction.className = "modal-btn secondary";
+    searchAction.textContent = "검색";
+    searchAction.addEventListener("click", () => openDictModal(false, query));
+
+    const addAction = document.createElement("button");
+    addAction.type = "button";
+    addAction.className = "modal-btn primary";
+    addAction.textContent = "+ 새단어 추가";
+    addAction.addEventListener("click", () => openModal("add", null, query));
+
+    actions.appendChild(searchAction);
+    actions.appendChild(addAction);
+    emptyEl.appendChild(msg);
+    emptyEl.appendChild(actions);
+  }
+
   function render() {
     const filtered = vocab.filter((item) => {
       const chapterMatch = !showChapters || activeChapter === "전체" || item.chapter === activeChapter;
@@ -220,6 +378,7 @@ function initVocabApp(config) {
 
     listEl.innerHTML = "";
     emptyEl.hidden = filtered.length > 0;
+    if (filtered.length === 0) renderEmptyState();
 
     let lastChapter = null;
     filtered.forEach((item) => {
@@ -335,10 +494,19 @@ function initVocabApp(config) {
     });
   }
 
-  searchEl.addEventListener("input", (e) => {
-    query = e.target.value.trim();
+  function performSearch() {
+    query = searchEl.value.trim();
     render();
+  }
+
+  searchEl.addEventListener("input", performSearch);
+  searchEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      performSearch();
+    }
   });
+  if (searchBtn) searchBtn.addEventListener("click", performSearch);
 
   toggleEnglishBtn.addEventListener("click", () => {
     document.body.classList.toggle("hide-english");
