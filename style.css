@@ -653,6 +653,35 @@ body.hide-meaning .word-meaning.maskable:not(.revealed) {
   flex-shrink: 0;
 }
 
+.paste-add-hint {
+  margin: 0;
+  font-size: 0.72rem;
+  color: var(--muted);
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.paste-add-row {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.paste-add-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 8px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-family: inherit;
+}
+
+.paste-add-row input:focus {
+  border-color: var(--pink);
+  outline: none;
+}
+
 .dict-suggestion-list {
   flex: 1;
   min-height: 0;
@@ -707,9 +736,12 @@ body.hide-meaning .word-meaning.maskable:not(.revealed) {
   .dict-suggestions {
     width: 100%;
     max-width: none;
-    max-height: 32%;
+    max-height: 48%;
     border-left: none;
     border-top: 2px solid var(--border);
+  }
+  .paste-add-hint {
+    display: none;
   }
 }
 
