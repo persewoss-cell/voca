@@ -252,6 +252,16 @@ body.hide-english .word-text.maskable:not(.revealed) {
   border-radius: 4px;
 }
 
+body.hide-english .word-base-text.maskable {
+  cursor: pointer;
+}
+
+body.hide-english .word-base-text.maskable:not(.revealed) {
+  color: transparent;
+  background: var(--pink-dark);
+  border-radius: 4px;
+}
+
 body.hide-meaning .word-meaning.maskable {
   cursor: pointer;
 }
