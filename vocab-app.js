@@ -537,14 +537,20 @@ function initVocabApp(config) {
       wordSpeakBtn.disabled = !supportsSpeech;
       wordSpeakBtn.addEventListener("click", () => speak(item.word, 0.85));
 
+      // 영어가리기 상태에서 함께 가려지고 함께 드러나야 하는 요소들
+      // (단어 자체 + 원형/합성어 표시 안의 영어 철자) — 하나를 누르면 전부 같이 토글된다.
+      const englishMaskables = [];
+      function toggleEnglishReveal() {
+        if (!document.body.classList.contains("hide-english")) return;
+        const nowRevealed = !englishMaskables[0].classList.contains("revealed");
+        englishMaskables.forEach((el) => el.classList.toggle("revealed", nowRevealed));
+      }
+
       const wordText = document.createElement("span");
       wordText.className = "word-text maskable";
       wordText.textContent = item.word;
-      wordText.addEventListener("click", () => {
-        if (document.body.classList.contains("hide-english")) {
-          wordText.classList.toggle("revealed");
-        }
-      });
+      wordText.addEventListener("click", toggleEnglishReveal);
+      englishMaskables.push(wordText);
 
       left.appendChild(wordSpeakBtn);
       left.appendChild(wordText);
@@ -563,28 +569,47 @@ function initVocabApp(config) {
         left.appendChild(pos);
       }
 
-      if (item.base) {
-        const baseNote = document.createElement("span");
-        baseNote.className = "word-base";
+      // 원형 표시([forget(잊다)의 과거형]) / 합성어 표시([all(모든)+inclusive(포함하는)]) 안의
+      // 영어(철자+뜻) 부분을 만들어 붙이는 공통 함수. parts가 2개면 "+"로 이어 합성어 표시가 된다.
+      function appendAnnotationBadge(parts, suffixText) {
+        const badge = document.createElement("span");
+        badge.className = "word-base";
+        badge.appendChild(document.createTextNode("["));
 
-        const baseSpeakBtn = document.createElement("button");
-        baseSpeakBtn.className = "speak-btn tiny";
-        baseSpeakBtn.type = "button";
-        baseSpeakBtn.setAttribute("aria-label", `${item.base.word} 발음 듣기`);
-        baseSpeakBtn.textContent = "🔊";
-        baseSpeakBtn.disabled = !supportsSpeech;
-        baseSpeakBtn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          speak(item.base.word, 0.85);
+        parts.forEach((part, idx) => {
+          if (idx > 0) badge.appendChild(document.createTextNode("+"));
+
+          const speakBtn = document.createElement("button");
+          speakBtn.type = "button";
+          speakBtn.className = "speak-btn tiny";
+          speakBtn.setAttribute("aria-label", `${part.word} 발음 듣기`);
+          speakBtn.textContent = "🔊";
+          speakBtn.disabled = !supportsSpeech;
+          speakBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            speak(part.word, 0.85);
+          });
+          badge.appendChild(speakBtn);
+
+          const textSpan = document.createElement("span");
+          textSpan.className = "word-base-text maskable";
+          textSpan.textContent = `${part.word}(${part.meaning})`;
+          textSpan.addEventListener("click", toggleEnglishReveal);
+          badge.appendChild(textSpan);
+          englishMaskables.push(textSpan);
         });
 
-        const baseText = document.createElement("span");
-        baseText.textContent = `${item.base.word}(${item.base.meaning})의 ${item.base.form}]`;
+        if (suffixText) badge.appendChild(document.createTextNode(suffixText));
+        badge.appendChild(document.createTextNode("]"));
+        left.appendChild(badge);
+      }
 
-        baseNote.appendChild(document.createTextNode("["));
-        baseNote.appendChild(baseSpeakBtn);
-        baseNote.appendChild(baseText);
-        left.appendChild(baseNote);
+      if (item.base) {
+        appendAnnotationBadge([item.base], `의 ${item.base.form}`);
+      }
+
+      if (item.compound) {
+        appendAnnotationBadge(item.compound);
       }
 
       const actions = document.createElement("div");
@@ -689,7 +714,9 @@ function initVocabApp(config) {
 
   toggleEnglishBtn.addEventListener("click", () => {
     document.body.classList.toggle("hide-english");
-    document.querySelectorAll(".word-text.revealed").forEach((el) => el.classList.remove("revealed"));
+    document
+      .querySelectorAll(".word-text.revealed, .word-base-text.revealed")
+      .forEach((el) => el.classList.remove("revealed"));
     toggleEnglishBtn.classList.toggle("active");
   });
 
