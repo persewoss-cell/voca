@@ -181,4 +181,28 @@ const MIRABELLE_VOCAB_DATA = [
   { chapter: "Chapter Six", word: "suspiciously", pos: "부사", meaning: "의심스러운 듯이", example: "Wilbur stared suspiciously at Beatrix" },
   { chapter: "Chapter Six", word: "un-Wilburish thing", pos: "표현", meaning: "윌버답지 않은 행동", example: "and then he did a very un-Wilburish thing." },
   { chapter: "Chapter Six", word: "trying", pos: "동사", meaning: "노력하고 있는", example: "'I'm trying to be good this holiday.'", base: { word: "try", meaning: "노력하다", form: "현재분사형(-ing)" } },
+
+  // ===== Chapter Seven =====
+  { chapter: "Chapter Seven", word: "spa", pos: "명사", meaning: "온천, 스파", example: "The following day I bumped into Beatrix at the swamp spa." },
+  { chapter: "Chapter Seven", word: "beady", pos: "형용사", meaning: "(눈이) 작고 반짝이는", example: "Her mum was keeping a beady eye on her" },
+  { chapter: "Chapter Seven", word: "more subdued", pos: "표현", meaning: "훨씬 더 차분해진", example: "she seemed much more subdued." },
+  { chapter: "Chapter Seven", word: "naughtier", pos: "형용사", meaning: "더 짓궂은", example: "'Your stories are even naughtier!'", base: { word: "naughty", meaning: "짓궂은", form: "비교급" } },
+  { chapter: "Chapter Seven", word: "impress", pos: "동사", meaning: "감명을 주다, 깊은 인상을 주다", example: "'I was trying to impress you.'" },
+  { chapter: "Chapter Seven", word: "disbelief", pos: "명사", meaning: "불신, 믿기지 않음", example: "I stared at Beatrix in disbelief." },
+  { chapter: "Chapter Seven", word: "shyly", pos: "부사", meaning: "수줍게", example: "said Beatrix, shyly handing me a little present." },
+  { chapter: "Chapter Seven", word: "touched", pos: "형용사", meaning: "감동받은", example: "'Oh, thanks!' I said, feeling touched that she would get me a present.", base: { word: "touch", meaning: "감동시키다, 만지다", form: "과거분사형" } },
+  { chapter: "Chapter Seven", word: "pen pals", pos: "명사(구)", meaning: "펜팔 친구", example: "'Let's be pen pals. We can write letters to each other!'" },
+  { chapter: "Chapter Seven", word: "swapped addresses", pos: "동사(구)", meaning: "주소를 교환했다", example: "We swapped addresses and then got into our separate cars,", base: { word: "swap", meaning: "교환하다", form: "과거형" } },
+  { chapter: "Chapter Seven", word: "separate cars", pos: "표현", meaning: "각자의 차", example: "got into our separate cars, waving goodbye to each other." },
+  { chapter: "Chapter Seven", word: "wrapping", pos: "명사", meaning: "포장지", example: "Inside the wrapping was a small wooden box.", base: { word: "wrap", meaning: "포장하다", form: "동명사(-ing)" } },
+  { chapter: "Chapter Seven", word: "warty", pos: "형용사", meaning: "사마귀가 난", example: "A green witch's head with a long warty nose pinged up at me on a spring." },
+  { chapter: "Chapter Seven", word: "cackled", pos: "동사", meaning: "낄낄거리며 웃었다", example: "'Got you!' it cackled.", base: { word: "cackle", meaning: "낄낄거리다", form: "과거형" } },
+  { chapter: "Chapter Seven", word: "squealed", pos: "동사", meaning: "꺅 소리질렀다", example: "I squealed and dropped the jack-in-a-box on the floor.", base: { word: "squeal", meaning: "꺅 소리지르다", form: "과거형" } },
+  { chapter: "Chapter Seven", word: "obviously", pos: "부사", meaning: "명백히, 확실히", example: "Five days was obviously too long for Beatrix to go without playing a trick!" },
+  { chapter: "Chapter Seven", word: "mischievous things to make and do", pos: "표현", meaning: "장난스러운 놀이거리 만들기", example: "Turn the page for some mischievous things to make and do!" },
+
+  // ===== 부록: How to Make a Witch Ice Cream Sundae =====
+  { chapter: "부록: Witch Ice Cream Sundae", word: "sundae", pos: "명사", meaning: "(아이스크림) 선데", example: "Take an ice cream sundae glass, and add a scoop or two of your favourite ice cream" },
+  { chapter: "부록: Witch Ice Cream Sundae", word: "edible eyes", pos: "명사(구)", meaning: "먹을 수 있는 눈 모양 장식", example: "Make your witch's face with edible eyes, and sweets for the nose and mouth." },
+  { chapter: "부록: Witch Ice Cream Sundae", word: "liquorice laces", pos: "명사(구)", meaning: "감초맛 젤리 끈 과자", example: "Add liquorice laces to make your witch's hair." },
 ];
