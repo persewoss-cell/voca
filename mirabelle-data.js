@@ -83,4 +83,14 @@ const MIRABELLE_VOCAB_DATA = [
   { chapter: "Chapter Two", word: "cheeky expression", pos: "명사(구)", meaning: "장난기 있는(까부는) 표정", example: "and a cheeky expression on her face." },
   { chapter: "Chapter Two", word: "mischief", pos: "명사", meaning: "장난", example: "'Last time we went dragon trekking you got up to all kinds of mischief.'" },
   { chapter: "Chapter Two", word: "a flicker of", pos: "표현", meaning: "살짝 스치는, 언뜻 비치는", example: "A flicker of mischief passed between us." },
+
+  // ===== Chapter Three =====
+  { chapter: "Chapter Three", word: "conversation", pos: "명사", meaning: "대화", example: "It wasn't long before Mum and Dad were deep in conversation with Beatrix's parents" },
+  { chapter: "Chapter Three", word: "impressed", pos: "형용사", meaning: "감명받은, 인상 깊어하는", example: "she didn't look quite as impressed as I thought she would be." },
+  { chapter: "Chapter Three", word: "furious", pos: "형용사", meaning: "몹시 화난", example: "'She was furious!'" },
+  { chapter: "Chapter Three", word: "That reminds me", pos: "표현", meaning: "그러고 보니 생각난다", example: "'That reminds me of the time that I made everyone in my classroom go bald.'" },
+  { chapter: "Chapter Three", word: "gobsmacked", pos: "형용사", meaning: "어안이 벙벙한", example: "I stared at Beatrix, gobsmacked, and she nodded" },
+  { chapter: "Chapter Three", word: "as naughty as", pos: "표현", meaning: "~만큼 짓궂은", example: "I had never met anyone as naughty as Beatrix before." },
+  { chapter: "Chapter Three", word: "absolutely no mischief", pos: "표현", meaning: "전혀 장난치지 않기", example: "And I had promised Mum and Dad that there would be absolutely no mischief this holiday." },
+  { chapter: "Chapter Three", word: "snuggled down", pos: "동사(구)", meaning: "이불 속으로 파고들다", example: "'I can't wait!' said Wilbur as he snuggled down into bed." },
 ];
