@@ -391,6 +391,26 @@ body.hide-meaning .word-meaning.maskable:not(.revealed) {
   background: #9457dc;
 }
 
+.speak-btn.tiny {
+  width: 20px;
+  height: 20px;
+  font-size: 0.65rem;
+  background: #b077f5;
+  vertical-align: middle;
+}
+
+.speak-btn.tiny:hover {
+  background: #9457dc;
+}
+
+.word-base {
+  font-size: 0.78rem;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
 .word-meaning {
   margin: 8px 0 10px;
   font-size: 1rem;
