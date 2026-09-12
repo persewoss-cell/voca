@@ -252,14 +252,16 @@ body.hide-english .word-text.maskable:not(.revealed) {
   border-radius: 4px;
 }
 
-body.hide-english .word-base-text.maskable {
+body.hide-english .word-base.maskable {
   cursor: pointer;
 }
 
-body.hide-english .word-base-text.maskable:not(.revealed) {
+body.hide-english .word-base.maskable:not(.revealed) {
   color: transparent;
   background: var(--pink-dark);
   border-radius: 4px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 body.hide-meaning .word-meaning.maskable {
