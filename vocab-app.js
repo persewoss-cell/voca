@@ -569,11 +569,16 @@ function initVocabApp(config) {
         left.appendChild(pos);
       }
 
-      // 원형 표시([forget(잊다)의 과거형]) / 합성어 표시([all(모든)+inclusive(포함하는)]) 안의
-      // 영어(철자+뜻) 부분을 만들어 붙이는 공통 함수. parts가 2개면 "+"로 이어 합성어 표시가 된다.
+      // 원형 표시([forget(잊다)의 과거형]) / 합성어 표시([all(모든)+inclusive(포함하는)]) 를
+      // 만들어 붙이는 공통 함수. parts가 2개면 "+"로 이어 합성어 표시가 된다.
+      // 영어가리기 상태에서는 대괄호 [ ] 안 전체(철자·뜻·조사까지)가 끊김 없이 한 덩어리로
+      // 가려지고, 스피커 버튼만 그 위에 그대로 눌려야 한다 — 부분부분 따로 가리지 않는다.
       function appendAnnotationBadge(parts, suffixText) {
         const badge = document.createElement("span");
-        badge.className = "word-base";
+        badge.className = "word-base maskable";
+        badge.addEventListener("click", toggleEnglishReveal);
+        englishMaskables.push(badge);
+
         badge.appendChild(document.createTextNode("["));
 
         parts.forEach((part, idx) => {
@@ -590,13 +595,7 @@ function initVocabApp(config) {
             speak(part.word, 0.85);
           });
           badge.appendChild(speakBtn);
-
-          const textSpan = document.createElement("span");
-          textSpan.className = "word-base-text maskable";
-          textSpan.textContent = `${part.word}(${part.meaning})`;
-          textSpan.addEventListener("click", toggleEnglishReveal);
-          badge.appendChild(textSpan);
-          englishMaskables.push(textSpan);
+          badge.appendChild(document.createTextNode(`${part.word}(${part.meaning})`));
         });
 
         if (suffixText) badge.appendChild(document.createTextNode(suffixText));
@@ -715,7 +714,7 @@ function initVocabApp(config) {
   toggleEnglishBtn.addEventListener("click", () => {
     document.body.classList.toggle("hide-english");
     document
-      .querySelectorAll(".word-text.revealed, .word-base-text.revealed")
+      .querySelectorAll(".word-text.revealed, .word-base.revealed")
       .forEach((el) => el.classList.remove("revealed"));
     toggleEnglishBtn.classList.toggle("active");
   });
