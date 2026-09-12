@@ -563,6 +563,30 @@ function initVocabApp(config) {
         left.appendChild(pos);
       }
 
+      if (item.base) {
+        const baseNote = document.createElement("span");
+        baseNote.className = "word-base";
+
+        const baseSpeakBtn = document.createElement("button");
+        baseSpeakBtn.className = "speak-btn tiny";
+        baseSpeakBtn.type = "button";
+        baseSpeakBtn.setAttribute("aria-label", `${item.base.word} 발음 듣기`);
+        baseSpeakBtn.textContent = "🔊";
+        baseSpeakBtn.disabled = !supportsSpeech;
+        baseSpeakBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          speak(item.base.word, 0.85);
+        });
+
+        const baseText = document.createElement("span");
+        baseText.textContent = `${item.base.word}(${item.base.meaning})의 ${item.base.form}]`;
+
+        baseNote.appendChild(document.createTextNode("["));
+        baseNote.appendChild(baseSpeakBtn);
+        baseNote.appendChild(baseText);
+        left.appendChild(baseNote);
+      }
+
       const actions = document.createElement("div");
       actions.className = "card-actions";
 
