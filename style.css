@@ -415,12 +415,31 @@ body.hide-meaning .word-meaning.maskable:not(.revealed) {
   background: #9457dc;
 }
 
+.word-hide-group {
+  display: inline-flex;
+  align-items: stretch;
+}
+
 .word-base {
   font-size: 0.78rem;
   color: var(--muted);
   display: inline-flex;
   align-items: center;
   gap: 3px;
+}
+
+.word-hide-group .word-base {
+  align-items: center;
+}
+
+.mask-join-left {
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+}
+
+.mask-join-right {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
 }
 
 .word-meaning {
