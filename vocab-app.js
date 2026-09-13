@@ -546,6 +546,11 @@ function initVocabApp(config) {
         englishMaskables.forEach((el) => el.classList.toggle("revealed", nowRevealed));
       }
 
+      // 단어 자체와 원형/합성어 표시([ ])를 하나의 이어진 막대로 가리기 위한 묶음.
+      // word-card-left의 flex gap이 사이에 끼어들지 않도록 이 그룹을 한 덩어리로 넣는다.
+      const wordGroup = document.createElement("span");
+      wordGroup.className = "word-hide-group";
+
       const wordText = document.createElement("span");
       wordText.className = "word-text maskable";
       wordText.textContent = item.word;
@@ -553,26 +558,13 @@ function initVocabApp(config) {
       englishMaskables.push(wordText);
 
       left.appendChild(wordSpeakBtn);
-      left.appendChild(wordText);
-
-      if (item.phonetic) {
-        const phonetic = document.createElement("span");
-        phonetic.className = "word-phonetic";
-        phonetic.textContent = item.phonetic;
-        left.appendChild(phonetic);
-      }
-
-      if (item.pos) {
-        const pos = document.createElement("span");
-        pos.className = "word-pos";
-        pos.textContent = item.pos;
-        left.appendChild(pos);
-      }
+      wordGroup.appendChild(wordText);
+      left.appendChild(wordGroup);
 
       // 원형 표시([forget(잊다)의 과거형]) / 합성어 표시([all(모든)+inclusive(포함하는)]) 를
       // 만들어 붙이는 공통 함수. parts가 2개면 "+"로 이어 합성어 표시가 된다.
-      // 영어가리기 상태에서는 대괄호 [ ] 안 전체(철자·뜻·조사까지)가 끊김 없이 한 덩어리로
-      // 가려지고, 스피커 버튼만 그 위에 그대로 눌려야 한다 — 부분부분 따로 가리지 않는다.
+      // 영어가리기 상태에서는 단어와 대괄호 [ ] 안 전체(철자·뜻·조사까지)가 위아래 높이까지
+      // 똑같이 맞춰진 채 끊김 없이 하나의 막대로 이어져 가려진다 — 부분부분 따로 가리지 않는다.
       function appendAnnotationBadge(parts, suffixText) {
         const badge = document.createElement("span");
         badge.className = "word-base maskable";
@@ -600,7 +592,7 @@ function initVocabApp(config) {
 
         if (suffixText) badge.appendChild(document.createTextNode(suffixText));
         badge.appendChild(document.createTextNode("]"));
-        left.appendChild(badge);
+        wordGroup.appendChild(badge);
       }
 
       if (item.base) {
@@ -609,6 +601,26 @@ function initVocabApp(config) {
 
       if (item.compound) {
         appendAnnotationBadge(item.compound);
+      }
+
+      // 이어진 막대의 안쪽 모서리는 각지게, 맨 처음/맨 끝 바깥쪽 모서리만 둥글게.
+      englishMaskables.forEach((el, idx) => {
+        if (idx > 0) el.classList.add("mask-join-left");
+        if (idx < englishMaskables.length - 1) el.classList.add("mask-join-right");
+      });
+
+      if (item.phonetic) {
+        const phonetic = document.createElement("span");
+        phonetic.className = "word-phonetic";
+        phonetic.textContent = item.phonetic;
+        left.appendChild(phonetic);
+      }
+
+      if (item.pos) {
+        const pos = document.createElement("span");
+        pos.className = "word-pos";
+        pos.textContent = item.pos;
+        left.appendChild(pos);
       }
 
       const actions = document.createElement("div");
