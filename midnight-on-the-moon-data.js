@@ -83,4 +83,44 @@ const MIDNIGHT_ON_THE_MOON_VOCAB_DATA = [
   { chapter: "Chapter 5: Hang On!", word: "peace", pos: "명사", meaning: "평화", example: "WE CAME IN PEACE" },
   { chapter: "Chapter 5: Hang On!", word: "mankind", pos: "명사", meaning: "인류", example: "FOR ALL MANKIND.", compound: [ { word: "man", meaning: "사람" }, { word: "kind", meaning: "종류" } ] },
   { chapter: "Chapter 5: Hang On!", word: "copy", pos: "동사", meaning: "베끼다, 옮겨 적다", example: "he took out his notebook and pencil to copy the sign." },
+  { chapter: "Chapter 5: Hang On!", word: "stepped aside", pos: "동사(구)", meaning: "옆으로 비켜섰다", example: "Annie stepped aside so he could look, too.", base: { word: "step aside", meaning: "옆으로 비키다", form: "과거형" } },
+  { chapter: "Chapter 5: Hang On!", word: "distance", pos: "명사", meaning: "(먼) 거리", example: "In the distance, something was flying above the ground." },
+
+  // ===== Chapter 6: High Jump =====
+  { chapter: "Chapter 6: High Jump", word: "base", pos: "명사", meaning: "기지", example: "'Let's go back to the base—before he gets here!'" },
+  { chapter: "Chapter 6: High Jump", word: "cloud of dust", pos: "명사(구)", meaning: "먼지 구름", example: "Suddenly, a cloud of dust flew up in front of them." },
+  { chapter: "Chapter 6: High Jump", word: "jerked", pos: "동사", meaning: "갑자기 멈췄다, 덜컹했다", example: "The buggy jerked to a stop.", base: { word: "jerk", meaning: "갑자기 움직이다", form: "과거형" } },
+  { chapter: "Chapter 6: High Jump", word: "settled", pos: "동사", meaning: "가라앉았다", example: "The dust settled.", base: { word: "settle", meaning: "가라앉다", form: "과거형" } },
+  { chapter: "Chapter 6: High Jump", word: "black", pos: "형용사", meaning: "검은", example: "Jack looked at the black sky." },
+  { chapter: "Chapter 6: High Jump", word: "bulky", pos: "형용사", meaning: "부피가 큰, 둔중한", example: "But his suit was too bulky." },
+  { chapter: "Chapter 6: High Jump", word: "failed", pos: "동사", meaning: "실패했다", example: "He tried to stand again. And failed.", base: { word: "fail", meaning: "실패하다", form: "과거형" } },
+
+  // ===== Chapter 7: The Moon Man =====
+  { chapter: "Chapter 7: The Moon Man", word: "we come in peace", pos: "표현", meaning: "우리는 평화롭게 왔습니다", example: "'Hi,' she said. 'We come in peace.'" },
+  { chapter: "Chapter 7: The Moon Man", word: "ready to burst", pos: "표현", meaning: "터질 것 같은", example: "By the time they got to the white dome, he was ready to burst." },
+  { chapter: "Chapter 7: The Moon Man", word: "visor", pos: "명사", meaning: "(헬멧의) 바이저, 얼굴 가리개", example: "Jack opened the visor of his helmet." },
+  { chapter: "Chapter 7: The Moon Man", word: "clumsily", pos: "부사", meaning: "어설프게, 서투르게", example: "As they moved clumsily into the spacesuit storeroom," },
+  { chapter: "Chapter 7: The Moon Man", word: "bulky suits", pos: "표현", meaning: "부피가 큰 우주복", example: "they stepped out of their bulky suits." },
+  { chapter: "Chapter 7: The Moon Man", word: "heels", pos: "명사", meaning: "발뒤꿈치", example: "He sighed, then sat back on his heels.", base: { word: "heel", meaning: "발뒤꿈치", form: "복수형" } },
+  { chapter: "Chapter 7: The Moon Man", word: "scurried", pos: "동사", meaning: "종종걸음으로 급히 갔다", example: "Peanut jumped out of Annie's arms and scurried back to the letter M.", base: { word: "scurry", meaning: "종종걸음으로 급히 가다", form: "과거형" } },
+
+  // ===== Chapter 8: One Star to Another =====
+  { chapter: "Chapter 8: One Star to Another", word: "constellation", pos: "명사", meaning: "별자리", example: "'You know how you draw a constellation?' said Jack." },
+  { chapter: "Chapter 8: One Star to Another", word: "constellation", pos: "명사", meaning: "별자리", example: "'Is there such a thing as a mouse constellation?' said Annie." },
+
+  // ===== Chapter 9: Morgan =====
+  { chapter: "Chapter 9: Morgan", word: "freed", pos: "동사", meaning: "자유롭게 해주었다, 풀어주었다", example: "'You have freed me from the magician's spell.'", base: { word: "free", meaning: "자유롭게 하다", form: "과거분사형(have freed)" } },
+  { chapter: "Chapter 9: Morgan", word: "sorcerer", pos: "명사", meaning: "마법사", example: "\"And the monkey and the sorcerer?\" said Jack." },
+  { chapter: "Chapter 9: Morgan", word: "absolutely", pos: "부사", meaning: "완전히, 전적으로", example: "Then everything was still. Absolutely still." },
+
+  // ===== Chapter 10: Earth Life =====
+  { chapter: "Chapter 10: Earth Life", word: "Camelot", pos: "고유명사", meaning: "카멜롯(아서왕의 궁전이 있던 곳)", example: "'I've been gone from Camelot for a long time.'" },
+  { chapter: "Chapter 10: Earth Life", word: "knowledge", pos: "명사", meaning: "지식", example: "'Thank you, Jack, for your great love of knowledge.'" },
+  { chapter: "Chapter 10: Earth Life", word: "braids", pos: "명사", meaning: "땋은 머리", example: "Morgan tugged on one of Annie's braids.", base: { word: "braid", meaning: "땋은 머리", form: "복수형" } },
+  { chapter: "Chapter 10: Earth Life", word: "universe", pos: "명사", meaning: "우주", example: "'The universe is filled with wonders. Isn't it, Jack?'" },
+  { chapter: "Chapter 10: Earth Life", word: "moist", pos: "형용사", meaning: "촉촉한, 눅눅한", example: "The midnight air felt cool and moist." },
+  { chapter: "Chapter 10: Earth Life", word: "alien", pos: "명사", meaning: "외계인", example: "'No. I think he's an alien,' said Annie, 'from another galaxy.'" },
+  { chapter: "Chapter 10: Earth Life", word: "scoffed", pos: "동사", meaning: "비웃었다, 코웃음 쳤다", example: "Jack scoffed. 'What makes you say that?'", base: { word: "scoff", meaning: "비웃다, 코웃음 치다", form: "과거형" } },
+  { chapter: "Chapter 10: Earth Life", word: "proof that aliens exist", pos: "표현", meaning: "외계인이 존재한다는 증거", example: "'There's no proof that aliens exist.'" },
+  { chapter: "Chapter 10: Earth Life", word: "universe", pos: "명사", meaning: "우주", example: "Morgan's words came back to him: The universe is filled with wonders. Isn't it, Jack?" },
 ];
