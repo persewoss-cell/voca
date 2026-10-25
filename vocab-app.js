@@ -117,6 +117,7 @@ function initVocabApp(config) {
         activeChapter = chapter;
         buildTabs();
         render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
       tabsEl.appendChild(btn);
     });
