@@ -184,4 +184,28 @@ const ABSENT_AUTHOR_VOCAB_DATA = [
   // ===== Chapter 8 =====
   { chapter: "Chapter 8", word: "timidly", pos: "부사", meaning: "소심하게, 조심스럽게", example: "'How was your lunch?' she asked timidly." },
   { chapter: "Chapter 8", word: "fishy", pos: "형용사", meaning: "수상한", example: "'we think there's something fishy going on on the third floor of this hotel.'" },
+  { chapter: "Chapter 8", word: "smudged signature", pos: "표현", meaning: "번진 서명", example: "She reminded Mavis about the smudged signature for Room 302" },
+  { chapter: "Chapter 8", word: "Disturb", pos: "동사", meaning: "방해하다", example: "and the Do Not Disturb sign on the door." },
+  { chapter: "Chapter 8", word: "replaced", pos: "동사", meaning: "다시 썼다, 제자리에 놓았다", example: "Mavis replaced her eyeglasses.", base: { word: "replace", meaning: "다시 놓다, 제자리에 돌려놓다", form: "과거형" } },
+  { chapter: "Chapter 8", word: "Mercy", pos: "감탄사", meaning: "세상에, 저런", example: "'Mercy! What do you think we should do?'" },
+  { chapter: "Chapter 8", word: "trooped", pos: "동사", meaning: "떼지어 걸어갔다", example: "they all trooped into the hotel lobby.", base: { word: "troop", meaning: "떼지어 걸어가다", form: "과거형" } },
+  { chapter: "Chapter 8", word: "Vividly", pos: "부사", meaning: "생생하게", example: "'Vividly,' Mr. Linkletter said." },
+  { chapter: "Chapter 8", word: "bobbed", pos: "동사", meaning: "까딱거렸다, 위아래로 움직였다", example: "his Adam's apple bobbed up and down.", base: { word: "bob", meaning: "까딱거리다, 위아래로 움직이다", form: "과거형" } },
+  { chapter: "Chapter 8", word: "Disturb", pos: "동사", meaning: "방해하다", example: "'a Do Not Disturb sign on the door.'" },
+  { chapter: "Chapter 8", word: "register", pos: "명사", meaning: "(호텔) 숙박부, 등록부", example: "Ruth Rose pointed to the register." },
+  { chapter: "Chapter 8", word: "smudged", pos: "형용사", meaning: "번진, 얼룩진", example: "'See? The signature is all smudged!'" },
+  { chapter: "Chapter 8", word: "Shangrila", pos: "고유명사", meaning: "샹그릴라(호텔 이름)", example: "'Things run very smoothly at the Shangrila.'" },
+  { chapter: "Chapter 8", word: "jiggling", pos: "동사", meaning: "짤랑거리며 흔들었다", example: "Dink watched Mr. Linkletter jiggling his bunch of keys.", base: { word: "jiggle", meaning: "짤랑거리며 흔들다", form: "현재분사형(-ing)" } },
+  { chapter: "Chapter 8", word: "muttered", pos: "동사", meaning: "중얼거렸다", example: "'Most unusual,' he muttered.", base: { word: "mutter", meaning: "중얼거리다", form: "과거형" } },
+  { chapter: "Chapter 8", word: "spotlessly", pos: "부사", meaning: "티끌 하나 없이", example: "The room was empty and spotlessly clean." },
+  { chapter: "Chapter 8", word: "Disturb", pos: "동사", meaning: "방해하다", example: "where a Do Not Disturb sign still hung on the doorknob." },
+  { chapter: "Chapter 8", word: "muffled", pos: "형용사", meaning: "억눌린, 잘 들리지 않는", example: "The voice was muffled, but it was definitely yelling, 'HELP!'", base: { word: "muffle", meaning: "소리를 죽이다", form: "과거분사형" } },
+  { chapter: "Chapter 8", word: "definitely", pos: "부사", meaning: "분명히, 확실히", example: "but it was definitely yelling, 'HELP!'" },
+
+  // ===== Chapter 9 =====
+  { chapter: "Chapter 9", word: "wrapped", pos: "동사", meaning: "감겨 있었다, 둘러싸여 있었다", example: "A towel was wrapped around his mouth.", base: { word: "wrap", meaning: "감싸다, 둘러싸다", form: "과거분사형" } },
+  { chapter: "Chapter 9", word: "unwrapped", pos: "동사", meaning: "풀었다", example: "Mavis unwrapped the towel from around his face.", base: { word: "unwrap", meaning: "풀다, 펼치다", form: "과거형" } },
+  { chapter: "Chapter 9", word: "recognize", pos: "동사", meaning: "알아보다", example: "'I recognize you from the picture you sent.'" },
+  { chapter: "Chapter 9", word: "itinerary", pos: "명사", meaning: "여행 일정표", example: "'We followed your itinerary,' Dink said." },
+  { chapter: "Chapter 9", word: "cottage", pos: "명사", meaning: "오두막집, 작은 집", example: "'I can't wait to get back to my safe little cottage in Maine.'" },
 ];
