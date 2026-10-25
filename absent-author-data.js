@@ -164,4 +164,24 @@ const ABSENT_AUTHOR_VOCAB_DATA = [
 
   // ===== Chapter 7 =====
   { chapter: "Chapter 7", word: "raisin", pos: "명사", meaning: "건포도", example: "Ruth Rose brought a bag of potato chips and some raisin cookies" },
+  { chapter: "Chapter 7", word: "nibbled", pos: "동사", meaning: "조금씩 베어 먹었다", example: "Dink nibbled on a cookie thoughtfully.", base: { word: "nibble", meaning: "조금씩 베어 먹다", form: "과거형" } },
+  { chapter: "Chapter 7", word: "victim", pos: "명사", meaning: "피해자", example: "'the more you know about the victim, the easier it is to figure out who did the crime.'" },
+  { chapter: "Chapter 7", word: "crime", pos: "명사", meaning: "범죄", example: "'the easier it is to figure out who did the crime.'" },
+  { chapter: "Chapter 7", word: "victim", pos: "명사", meaning: "피해자", example: "'So let's try to find out more about our victim. Listen to this.'" },
+  { chapter: "Chapter 7", word: "author", pos: "명사", meaning: "작가", example: "'When not writing, the author likes to work in the garden.'" },
+  { chapter: "Chapter 7", word: "bugging", pos: "동사", meaning: "신경 쓰이게 하다", example: "'something is bugging me, but I can't figure out what it is.'", base: { word: "bug", meaning: "신경 쓰이게 하다", form: "현재분사형(-ing)" } },
+  { chapter: "Chapter 7", word: "preserve", pos: "동사", meaning: "보존하다", example: "'Wallis Wallace gives money from writing books to help preserve the wild animals that live in Maine.'" },
+  { chapter: "Chapter 7", word: "smudged", pos: "형용사", meaning: "번진, 얼룩진", example: "'And the signature was all smudged?'" },
+  { chapter: "Chapter 7", word: "Disturb", pos: "동사", meaning: "방해하다", example: "'told us that Room 302 had a Do Not Disturb sign on it!'" },
+  { chapter: "Chapter 7", word: "interrupted", pos: "동사", meaning: "끼어들었다, 말을 끊었다", example: "Ruth Rose interrupted. 'Livvy never went into that room at all!'", base: { word: "interrupt", meaning: "끼어들다, 말을 끊다", form: "과거형" } },
+  { chapter: "Chapter 7", word: "stupidly", pos: "부사", meaning: "바보같이", example: "He looked at his mother and grinned stupidly." },
+  { chapter: "Chapter 7", word: "ordered", pos: "동사", meaning: "명령했다, 지시했다", example: "Think, Dink! he ordered himself.", base: { word: "order", meaning: "명령하다, 지시하다", form: "과거형" } },
+  { chapter: "Chapter 7", word: "spilled", pos: "동사", meaning: "쏟아졌다", example: "The sticky cold liquid spilled into Dink's lap.", base: { word: "spill", meaning: "쏟아지다, 흘리다", form: "과거형" } },
+  { chapter: "Chapter 7", word: "yowl", pos: "명사", meaning: "비명, 울부짖음", example: "Dink let out a yowl and jumped up." },
+  { chapter: "Chapter 7", word: "satisfied", pos: "형용사", meaning: "만족하는", example: "'Some people are never satisfied.'" },
+  { chapter: "Chapter 7", word: "blotted", pos: "동사", meaning: "(물기를) 닦아냈다", example: "Dink blotted his jeans with a handful of paper napkins.", base: { word: "blot", meaning: "닦아내다, 흡수시키다", form: "과거형" } },
+
+  // ===== Chapter 8 =====
+  { chapter: "Chapter 8", word: "timidly", pos: "부사", meaning: "소심하게, 조심스럽게", example: "'How was your lunch?' she asked timidly." },
+  { chapter: "Chapter 8", word: "fishy", pos: "형용사", meaning: "수상한", example: "'we think there's something fishy going on on the third floor of this hotel.'" },
 ];
