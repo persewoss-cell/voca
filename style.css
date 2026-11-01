@@ -33,6 +33,17 @@ body {
   margin: 0;
   color: white;
   font-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.home-title-icon {
+  width: 1.3em;
+  height: 1.3em;
+  border-radius: 8px;
+  flex-shrink: 0;
 }
 
 .book-list {
