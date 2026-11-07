@@ -135,4 +135,22 @@ const BALD_BANDIT_VOCAB_DATA = [
   // ===== Chapter 5 =====
   { chapter: "Chapter 5", word: "bald", pos: "형용사", meaning: "대머리의", example: "'He's bald?' Josh said, climbing Ruth Rose's front steps." },
   { chapter: "Chapter 5", word: "WATCH NATE", pos: "표현", meaning: "네이트를 봐줘(지켜봐줘)", example: "'I'M LEAVING WITH THE GUYS, MOM! WATCH NATE!'" },
+  { chapter: "Chapter 5", word: "freckles", pos: "명사", meaning: "주근깨", example: "had red hair and a face full of freckles.", base: { word: "freckle", meaning: "주근깨", form: "복수형" } },
+  { chapter: "Chapter 5", word: "earn", pos: "동사", meaning: "(돈을) 벌다", example: "'How'd you like to earn some money?'" },
+  { chapter: "Chapter 5", word: "hired", pos: "동사", meaning: "고용했다", example: "'The bank hired a detective to find the video,'", base: { word: "hire", meaning: "고용하다", form: "과거형" } },
+  { chapter: "Chapter 5", word: "paying", pos: "동사", meaning: "지불하고 있는", example: "'He's paying us to get the video,'", base: { word: "pay", meaning: "지불하다", form: "현재분사형(-ing)" } },
+  { chapter: "Chapter 5", word: "split", pos: "동사", meaning: "나누다", example: "'and we'll split the money with you.'" },
+  { chapter: "Chapter 5", word: "muttered", pos: "동사", meaning: "중얼거렸다", example: "'Yeah,' he muttered.", base: { word: "mutter", meaning: "중얼거리다", form: "과거형" } },
+
+  // ===== Chapter 6 =====
+  { chapter: "Chapter 6", word: "limping", pos: "동사", meaning: "다리를 절뚝거리는", example: "Dink noticed that he was limping.", base: { word: "limp", meaning: "다리를 절뚝거리다", form: "현재분사형(-ing)" } },
+  { chapter: "Chapter 6", word: "shaved", pos: "동사", meaning: "밀었다, 깎았다", example: "'That's why I ran to Howard's to get my head shaved.'", base: { word: "shave", meaning: "밀다, 깎다", form: "과거분사형" } },
+  { chapter: "Chapter 6", word: "rotten", pos: "형용사", meaning: "끔찍한, 형편없는", example: "'People call me that because I always have such rotten luck.'" },
+  { chapter: "Chapter 6", word: "stolen", pos: "동사", meaning: "도난당한", example: "'my bike got stolen, and I broke my toe.'", base: { word: "steal", meaning: "훔치다", form: "과거분사형" } },
+  { chapter: "Chapter 6", word: "barely", pos: "부사", meaning: "겨우, 간신히", example: "'I can barely walk to school.'" },
+  { chapter: "Chapter 6", word: "college", pos: "명사", meaning: "대학", example: "'I'm saving all my money for college,' he said." },
+  { chapter: "Chapter 6", word: "limped", pos: "동사", meaning: "다리를 절뚝거리며 걸었다", example: "He got off the bed and limped over to his closet.", base: { word: "limp", meaning: "다리를 절뚝거리며 걷다", form: "과거형" } },
+  { chapter: "Chapter 6", word: "embarrassed", pos: "형용사", meaning: "당황한, 쑥스러운", example: "Lucky looked embarrassed." },
+  { chapter: "Chapter 6", word: "freckles", pos: "명사", meaning: "주근깨", example: "Dink noticed they all had red hair and freckles.", base: { word: "freckle", meaning: "주근깨", form: "복수형" } },
+  { chapter: "Chapter 6", word: "triple-high-fived", pos: "동사", meaning: "세 명이 하이파이브를 했다", example: "Dink, Josh, and Ruth Rose triple-high-fived each other.", compound: [ { word: "triple", meaning: "세 겹의, 세 명이 함께" }, { word: "high-fived", meaning: "하이파이브를 했다" } ] },
 ];
