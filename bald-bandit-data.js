@@ -153,4 +153,22 @@ const BALD_BANDIT_VOCAB_DATA = [
   { chapter: "Chapter 6", word: "embarrassed", pos: "형용사", meaning: "당황한, 쑥스러운", example: "Lucky looked embarrassed." },
   { chapter: "Chapter 6", word: "freckles", pos: "명사", meaning: "주근깨", example: "Dink noticed they all had red hair and freckles.", base: { word: "freckle", meaning: "주근깨", form: "복수형" } },
   { chapter: "Chapter 6", word: "triple-high-fived", pos: "동사", meaning: "세 명이 하이파이브를 했다", example: "Dink, Josh, and Ruth Rose triple-high-fived each other.", compound: [ { word: "triple", meaning: "세 겹의, 세 명이 함께" }, { word: "high-fived", meaning: "하이파이브를 했다" } ] },
+  { chapter: "Chapter 6", word: "earned", pos: "동사", meaning: "(돈을) 벌었다", example: "he'd tell them how he earned the hundred bucks.", base: { word: "earn", meaning: "(돈을) 벌다", form: "과거형" } },
+  { chapter: "Chapter 6", word: "bucks", pos: "명사", meaning: "달러, 돈", example: "he'd tell them how he earned the hundred bucks." },
+
+  // ===== Chapter 7 =====
+  { chapter: "Chapter 7", word: "VCR", pos: "명사", meaning: "비디오 재생기", example: "Dink turned on the TV and slid the tape into the VCR." },
+  { chapter: "Chapter 7", word: "recognized", pos: "동사", meaning: "알아보았다", example: "Dink recognized little Josephine." },
+  { chapter: "Chapter 7", word: "pause", pos: "명사", meaning: "일시정지", example: "He pressed the pause button." },
+  { chapter: "Chapter 7", word: "completely bald", pos: "표현", meaning: "완전히 대머리인", example: "The man on the tape was completely bald." },
+  { chapter: "Chapter 7", word: "dimple", pos: "명사", meaning: "보조개", example: "'Look, he's got a dimple on his chin.'" },
+  { chapter: "Chapter 7", word: "slammed", pos: "동사", meaning: "쾅 닫혔다", example: "The door slammed behind her." },
+  { chapter: "Chapter 7", word: "dimples", pos: "명사", meaning: "보조개들", example: "'Maybe she doesn't like guys with dimples.'", base: { word: "dimple", meaning: "보조개", form: "복수형" } },
+  { chapter: "Chapter 7", word: "bandit's", pos: "명사", meaning: "강도의", example: "She stuck one eyebrow on the TV screen, under the bandit's nose." },
+  { chapter: "Chapter 7", word: "demanded", pos: "동사", meaning: "(강하게) 물었다, 요구했다", example: "'Who does that look like?' she demanded.", base: { word: "demand", meaning: "강하게 묻다, 요구하다", form: "과거형" } },
+
+  // ===== Chapter 8 =====
+  { chapter: "Chapter 8", word: "snatched", pos: "동사", meaning: "홱 낚아챘다", example: "Ruth Rose snatched the wig and eyebrow off the TV", base: { word: "snatch", meaning: "홱 낚아채다", form: "과거형" } },
+  { chapter: "Chapter 8", word: "eject", pos: "동사", meaning: "꺼내다, 배출하다", example: "Josh pushed the eject button and slid the video inside his shirt." },
+  { chapter: "Chapter 8", word: "mumbled", pos: "동사", meaning: "중얼거렸다", example: "'We were just lucky, I guess,' Dink mumbled.", base: { word: "mumble", meaning: "중얼거리다", form: "과거형" } },
 ];
