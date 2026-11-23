@@ -1,0 +1,33 @@
+const CANARY_CAPER_VOCAB_DATA = [
+  // ===== C is for Confusion... (Preview) =====
+  { chapter: "C is for Confusion...", word: "blazed", pos: "동사", meaning: "확 켜졌다", example: "The upstairs light blazed on.", base: { word: "blaze", meaning: "확 타오르다/켜지다", form: "과거형" } },
+  { chapter: "C is for Confusion...", word: "blared", pos: "동사", meaning: "요란하게 울렸다", example: "And a police whistle blared through the open window.", base: { word: "blare", meaning: "요란하게 울리다", form: "과거형" } },
+  { chapter: "C is for Confusion...", word: "leaped", pos: "동사", meaning: "뛰어올랐다", example: "Dink leaped to his feet.", base: { word: "leap", meaning: "뛰어오르다", form: "과거형" } },
+  { chapter: "C is for Confusion...", word: "burglar", pos: "명사", meaning: "도둑, 강도", example: "Mrs. Davis was up there, and so was the burglar!" },
+
+  // ===== Chapter 1 =====
+  { chapter: "Chapter 1", word: "wiping", pos: "동사", meaning: "닦고 있는", example: "Josh hurried past Dink, wiping his forehead.", base: { word: "wipe", meaning: "닦다", form: "현재분사형(-ing)" } },
+  { chapter: "Chapter 1", word: "flopped", pos: "동사", meaning: "털썩 주저앉았다", example: "Josh grabbed the apple juice and flopped into a chair.", base: { word: "flop", meaning: "털썩 주저앉다", form: "과거형" } },
+  { chapter: "Chapter 1", word: "pouring", pos: "동사", meaning: "따르고 있는", example: "'You're funny, but it's too hot to laugh,' he said, pouring himself a glass.", base: { word: "pour", meaning: "따르다", form: "현재분사형(-ing)" } },
+  { chapter: "Chapter 1", word: "beeline", pos: "명사", meaning: "직행, 지름길", example: "Josh made a beeline for the cookie jar." },
+  { chapter: "Chapter 1", word: "leaping", pos: "동사", meaning: "뛰어오르는", example: "'Don't eat all of them!' Dink said, leaping up the stairs.", base: { word: "leap", meaning: "뛰어오르다", form: "현재분사형(-ing)" } },
+  { chapter: "Chapter 1", word: "half-price admission", pos: "표현", meaning: "반값 입장료", example: "'We're in a hurry. Thursday is half-price admission if we get to the circus by one o'clock.'" },
+  { chapter: "Chapter 1", word: "yanked", pos: "동사", meaning: "홱 잡아당겼다", example: "Dink brushed his teeth, yanked a comb through his blond hair,", base: { word: "yank", meaning: "홱 잡아당기다", form: "과거형" } },
+  { chapter: "Chapter 1", word: "comb", pos: "명사", meaning: "빗", example: "Dink brushed his teeth, yanked a comb through his blond hair," },
+  { chapter: "Chapter 1", word: "charged", pos: "동사", meaning: "돌진했다, 달려갔다", example: "then charged back down the stairs.", base: { word: "charge", meaning: "돌진하다, 달려가다", form: "과거형" } },
+  { chapter: "Chapter 1", word: "residence", pos: "명사", meaning: "자택, 거주지", example: "'Hello, Duncan residence.'" },
+  { chapter: "Chapter 1", word: "canary", pos: "명사", meaning: "카나리아", example: "You know her canary, Mozart?" },
+  { chapter: "Chapter 1", word: "escaped", pos: "동사", meaning: "탈출했다", example: "'He's escaped.'", base: { word: "escape", meaning: "탈출하다", form: "과거형" } },
+  { chapter: "Chapter 1", word: "smeared", pos: "동사", meaning: "(얼룩이) 묻은", example: "Nate's lips, cheeks, and T-shirt were smeared with chocolate.", base: { word: "smear", meaning: "얼룩을 묻히다", form: "과거분사형" } },
+  { chapter: "Chapter 1", word: "raggedy", pos: "형용사", meaning: "너덜너덜한, 낡은", example: "He was holding a raggedy stuffed dinosaur." },
+  { chapter: "Chapter 1", word: "Sheef ungt fruz", pos: "표현", meaning: "(아기가 옹알이로 하는, 알아들을 수 없는 말)", example: "'Sheef ungt fruz,' Nate said with a full mouth." },
+  { chapter: "Chapter 1", word: "paid", pos: "동사", meaning: "돈을 받는", example: "'Then you could yell all day and get paid for it.'", base: { word: "pay", meaning: "돈을 받다/지불하다", form: "과거분사형" } },
+  { chapter: "Chapter 1", word: "salesman", pos: "명사", meaning: "영업사원(남자)", example: "'Ruth Rose, you should get a job as a car salesman.'" },
+  { chapter: "Chapter 1", word: "President", pos: "명사", meaning: "대통령", example: "'You know perfectly well that I'm going to be President,' she said sweetly." },
+  { chapter: "Chapter 1", word: "saleswoman", pos: "명사", meaning: "영업사원(여자)", example: "'And it's saleswoman, Josh.'" },
+  { chapter: "Chapter 1", word: "headband", pos: "명사", meaning: "머리띠", example: "from her sneakers to the headband holding back her black curls." },
+  { chapter: "Chapter 1", word: "Race", pos: "동사", meaning: "경주하다, 달리기 시합하다", example: "'Tiger is plump,' she said, 'not fat. Race you!'" },
+  { chapter: "Chapter 1", word: "Split", pos: "동사", meaning: "흩어지다, 나누다", example: "'Split up,' Dink said. 'Check all the bushes and flowers.'" },
+  { chapter: "Chapter 1", word: "shrub", pos: "명사", meaning: "관목", example: "The kids searched every tree, shrub, and flower bed." },
+  { chapter: "Chapter 1", word: "porch", pos: "명사", meaning: "현관, 포치", example: "Mrs. Davis watched from her back porch." },
+];
